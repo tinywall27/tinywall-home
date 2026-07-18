@@ -1,0 +1,66 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { topics } from '../../data/topics';
+import { getArticleYear, getPublishedArticles } from '../../lib/articles';
+
+const articles = await getPublishedArticles();
+const years = [...new Set(articles.map(getArticleYear))];
+---
+
+<BaseLayout
+	title="文章｜TinyWall"
+	description="搜索、筛选并阅读 TinyWall 的文章、AI Daily Brief 与建站札记。"
+>
+	<section class="page-hero shell page-hero--articles">
+		<p class="eyebrow">READING WINDOW</p>
+		<h1>文章</h1>
+		<p>从每日简报到长期笔记，在一个安静的窗口里检索、筛选和阅读。</p>
+	</section>
+
+	<section class="article-browser shell" id="search" aria-labelledby="search-title">
+		<form class="filter-bar" id="article-filters" role="search">
+			<div class="search-field">
+				<label for="article-search" id="search-title">搜索文章</label>
+				<input
+					id="article-search"
+					name="q"
+					type="search"
+					placeholder="搜索标题、正文或主题…"
+					autocomplete="off"
+				/>
+			</div>
+			<div class="select-field">
+				<label for="topic-filter">主题</label>
+				<select id="topic-filter" name="topic">
+					<option value="">全部主题</option>
+					{topics.map((topic) => <option value={topic.id}>{topic.name}</option>)}
+				</select>
+			</div>
+			<div class="select-field">
+				<label for="year-filter">年份</label>
+				<select id="year-filter" name="year">
+					<option value="">全部年份</option>
+					{years.map((year) => <option value={year}>{year}</option>)}
+				</select>
+			</div>
+			<button class="filter-reset" type="reset">清除</button>
+		</form>
+
+		<div class="results-heading" aria-live="polite">
+			<p><strong data-result-count>{articles.length}</strong> 篇文章</p>
+			<span>按发布时间从新到旧</span>
+		</div>
+
+		<div class="article-list" data-article-list>
+			{articles.map((article) => <ArticleCard article={article} searchable />)}
+		</div>
+		<div class="empty-state" data-empty-state hidden>
+			<p class="eyebrow">NO RESULTS</p>
+			<h2>没有找到匹配的文章</h2>
+			<p>试试缩短关键词，或者清除主题与年份筛选。</p>
+		</div>
+	</section>
+</BaseLayout>
+
+<script is:inline type="module" src="/article-search.js"></script>

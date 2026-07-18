@@ -1,0 +1,129 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { topicMap } from '../../data/topics';
+import {
+	estimateReadingMinutes,
+	formatDate,
+	getArticleYear,
+	getPublishedArticles,
+	type Article,
+} from '../../lib/articles';
+
+export async function getStaticPaths() {
+	const articles = await getPublishedArticles();
+	return articles.map((article, index) => ({
+		params: { slug: article.id },
+		props: {
+			article,
+			newerArticle: articles[index - 1],
+			olderArticle: articles[index + 1],
+		},
+	}));
+}
+
+interface Props {
+	article: Article;
+	newerArticle?: Article;
+	olderArticle?: Article;
+}
+
+const { article, newerArticle, olderArticle } = Astro.props;
+const { Content, headings } = await render(article);
+const toc = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+const readingMinutes = estimateReadingMinutes(article.body);
+const year = getArticleYear(article);
+---
+
+<BaseLayout
+	title={`${article.data.title}｜TinyWall`}
+	description={article.data.description}
+	canonical={`/articles/${article.id}/`}
+	type="article"
+	publishedAt={article.data.publishedAt}
+>
+	<article
+		class="article-page shell"
+		data-pagefind-body
+		data-pagefind-filter={`year:${year}`}
+		data-pagefind-sort={`date:${article.data.publishedAt.toISOString()}`}
+	>
+		<header class="article-header">
+			<div class="article-header__meta">
+				<span>{article.data.series === 'ai-daily-brief' ? 'AI DAILY BRIEF' : 'TINYWALL ARTICLE'}</span>
+				<span>{readingMinutes} 分钟阅读</span>
+			</div>
+			<h1 data-pagefind-meta="title">{article.data.title}</h1>
+			<p class="article-header__description" data-pagefind-meta="description">
+				{article.data.description}
+			</p>
+			<div class="article-header__details">
+				<time datetime={article.data.publishedAt.toISOString()}>
+					发布于 {formatDate(article.data.publishedAt)}
+				</time>
+				{article.data.updatedAt && (
+					<time datetime={article.data.updatedAt.toISOString()}>
+						更新于 {formatDate(article.data.updatedAt)}
+					</time>
+				)}
+			</div>
+			<div class="topic-list">
+				{article.data.topics.map((topic) => (
+					<a href={`/topics/${topic}/`} data-pagefind-filter={`topic:${topic}`}>
+						{topicMap[topic].name}
+					</a>
+				))}
+			</div>
+		</header>
+
+		{toc.length > 0 && (
+			<details class="mobile-toc">
+				<summary>文章目录</summary>
+				<nav aria-label="文章目录">
+					{toc.map((heading) => (
+						<a class:list={[`toc-depth-${heading.depth}`]} href={`#${heading.slug}`}>{heading.text}</a>
+					))}
+				</nav>
+			</details>
+		)}
+
+		<div class="article-layout">
+			{toc.length > 0 && (
+				<aside class="desktop-toc">
+					<p>目录</p>
+					<nav aria-label="文章目录">
+						{toc.map((heading) => (
+							<a class:list={[`toc-depth-${heading.depth}`]} href={`#${heading.slug}`}>{heading.text}</a>
+						))}
+					</nav>
+				</aside>
+			)}
+			<div class="prose">
+				<Content />
+				{article.data.sources && article.data.sources.length > 0 && (
+					<section class="sources" aria-labelledby="sources-title">
+						<h2 id="sources-title">参考来源</h2>
+						<ol>
+							{article.data.sources.map((source) => (
+								<li><a href={source.url} target="_blank" rel="noopener noreferrer">{source.title}</a></li>
+							))}
+						</ol>
+					</section>
+				)}
+			</div>
+		</div>
+
+		<nav class="article-neighbors" aria-label="相邻文章">
+			{newerArticle ? (
+				<a href={`/articles/${newerArticle.id}/`}>
+					<small>更新一篇</small><span>{newerArticle.data.title}</span>
+				</a>
+			) : <span />}
+			{olderArticle ? (
+				<a href={`/articles/${olderArticle.id}/`} class="article-neighbors__older">
+					<small>更早一篇</small><span>{olderArticle.data.title}</span>
+				</a>
+			) : <span />}
+		</nav>
+	</article>
+</BaseLayout>

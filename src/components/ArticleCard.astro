@@ -1,0 +1,40 @@
+---
+import type { Article } from '../lib/articles';
+import { formatShortDate, getArticleYear } from '../lib/articles';
+import { topicMap } from '../data/topics';
+
+interface Props {
+	article: Article;
+	compact?: boolean;
+	searchable?: boolean;
+}
+
+const { article, compact = false, searchable = false } = Astro.props;
+const topicNames = article.data.topics.map((topic) => topicMap[topic].name);
+const searchText = [article.data.title, article.data.description, ...topicNames]
+	.join(' ')
+	.toLocaleLowerCase('zh-CN');
+---
+
+<article
+	class:list={['article-card', { 'article-card--compact': compact }]}
+	data-article-card={searchable ? '' : undefined}
+	data-url={searchable ? `/articles/${article.id}/` : undefined}
+	data-year={searchable ? getArticleYear(article) : undefined}
+	data-topics={searchable ? article.data.topics.join(',') : undefined}
+	data-search={searchable ? searchText : undefined}
+>
+	<div class="article-card__meta">
+		<time datetime={article.data.publishedAt.toISOString()}>
+			{formatShortDate(article.data.publishedAt)}
+		</time>
+		{article.data.series === 'ai-daily-brief' && <span>AI Daily Brief</span>}
+	</div>
+	<h3><a href={`/articles/${article.id}/`}>{article.data.title}</a></h3>
+	<p>{article.data.description}</p>
+	<div class="topic-list topic-list--small">
+		{article.data.topics.map((topic) => (
+			<a href={`/topics/${topic}/`}>{topicMap[topic].name}</a>
+		))}
+	</div>
+</article>

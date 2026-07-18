@@ -1,0 +1,132 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { topics } from '../data/topics';
+import { getArticleYear, getPublishedArticles } from '../lib/articles';
+
+const articles = await getPublishedArticles();
+const latestBrief = articles.find((article) => article.data.series === 'ai-daily-brief');
+const recentArticles = articles
+	.filter((article) => article.id !== latestBrief?.id)
+	.slice(0, 4);
+const topicStats = topics
+	.map((topic) => ({
+		...topic,
+		count: articles.filter((article) => article.data.topics.includes(topic.id)).length,
+	}))
+	.filter((topic) => topic.count > 0)
+	.sort((a, b) => b.count - a.count);
+const years = [...new Set(articles.map(getArticleYear))];
+---
+
+<BaseLayout>
+	<section class="hero shell">
+		<div class="hero__copy">
+			<p class="eyebrow">PERSONAL KNOWLEDGE PORTAL · 个人知识门户</p>
+			<h1>把重要的项目，<br />和每天值得读的内容放在一起。</h1>
+			<p class="hero__lede">
+				TinyWall 是我的个人知识入口。这里连接正在建设的项目，也保存文章、简报与持续思考。
+			</p>
+			<div class="hero__actions">
+				<a class="button button--primary" href="/articles/">开始阅读</a>
+				<a class="text-link" href="#projects">浏览项目 <span aria-hidden="true">↓</span></a>
+			</div>
+		</div>
+		<div class="hero__note" aria-label="TinyWall 说明">
+			<span class="hero__note-number">01</span>
+			<p>一个安静、清晰、持续更新的窗口。</p>
+			<small>项目 · 阅读 · 归档</small>
+		</div>
+	</section>
+
+	<section class="projects-section shell" id="projects" aria-labelledby="projects-title">
+		<div class="section-heading section-heading--line">
+			<div>
+				<p class="eyebrow">SELECTED PROJECTS</p>
+				<h2 id="projects-title">重要项目</h2>
+			</div>
+			<p>从这里快速进入 TinyWall 旗下正在持续建设的专题项目。</p>
+		</div>
+
+		<div class="project-grid">
+			<a class="project-card project-card--fund" href="https://fund.tinywall.cc" target="_blank" rel="noopener noreferrer">
+				<div class="project-card__top">
+					<span>01 / KNOWLEDGE BASE</span>
+					<span aria-hidden="true">↗</span>
+				</div>
+				<div>
+					<p class="project-card__kicker">FUND</p>
+					<h3>跨境基金知识库</h3>
+					<p>围绕跨境基金、市场结构与投资研究建立的知识索引。</p>
+				</div>
+				<strong>fund.tinywall.cc</strong>
+			</a>
+
+			<a class="project-card project-card--geo" href="https://geo.tinywall.cc" target="_blank" rel="noopener noreferrer">
+				<div class="project-card__top">
+					<span>02 / GEO × AI</span>
+					<span aria-hidden="true">↗</span>
+				</div>
+				<div>
+					<p class="project-card__kicker">GEO</p>
+					<h3>地理 AI 项目</h3>
+					<p>探索空间信息、地理知识与人工智能之间的新连接。</p>
+				</div>
+				<strong>geo.tinywall.cc</strong>
+			</a>
+		</div>
+	</section>
+
+	{latestBrief && (
+		<section class="brief-section">
+			<div class="shell brief-section__inner">
+				<div class="brief-intro">
+					<p class="eyebrow">AI DAILY BRIEF</p>
+					<h2>每日信息窗口</h2>
+					<p>未来由 AI 每日整理值得关注的研究、产品与趋势。现在先从一篇版式示例开始。</p>
+					<a class="text-link" href="/topics/daily-brief/">查看全部简报 <span aria-hidden="true">→</span></a>
+				</div>
+				<ArticleCard article={latestBrief} />
+			</div>
+		</section>
+	)}
+
+	<section class="reading-section shell" aria-labelledby="reading-title">
+		<div class="section-heading section-heading--line">
+			<div>
+				<p class="eyebrow">LATEST READING</p>
+				<h2 id="reading-title">近期文章</h2>
+			</div>
+			<a class="text-link" href="/articles/">全部文章 <span aria-hidden="true">→</span></a>
+		</div>
+		<div class="article-grid">
+			{recentArticles.map((article) => <ArticleCard article={article} compact />)}
+		</div>
+	</section>
+
+	<section class="explore-section shell" aria-labelledby="explore-title">
+		<div class="section-heading">
+			<p class="eyebrow">EXPLORE THE ARCHIVE</p>
+			<h2 id="explore-title">从主题或年份继续</h2>
+		</div>
+		<div class="explore-grid">
+			<div class="explore-panel">
+				<span class="explore-panel__label">主题</span>
+				<div class="large-link-list">
+					{topicStats.map((topic) => (
+						<a href={`/topics/${topic.id}/`}>
+							<span>{topic.name}</span><small>{topic.count} 篇</small>
+						</a>
+					))}
+				</div>
+			</div>
+			<div class="explore-panel">
+				<span class="explore-panel__label">年份</span>
+				<div class="year-links">
+					{years.map((year) => <a href={`/archive/${year}/`}>{year}</a>)}
+				</div>
+				<p>按时间回看写作、项目与每一次信息整理。</p>
+			</div>
+		</div>
+	</section>
+</BaseLayout>

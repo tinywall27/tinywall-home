@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { topics, type TopicId } from '../../data/topics';
+import { getPublishedArticles, type Article } from '../../lib/articles';
+
+export async function getStaticPaths() {
+	const articles = await getPublishedArticles();
+	return topics.map((topic) => ({
+		params: { topic: topic.id },
+		props: {
+			topic,
+			articles: articles.filter((article) => article.data.topics.includes(topic.id)),
+		},
+	}));
+}
+
+interface Props {
+	topic: (typeof topics)[number];
+	articles: Article[];
+}
+
+const { topic, articles } = Astro.props as Props;
+const topicId = topic.id as TopicId;
+---
+
+<BaseLayout title={`${topic.name}｜TinyWall`} description={topic.description}>
+	<section class="page-hero shell page-hero--detail">
+		<a class="back-link" href="/topics/">← 全部主题</a>
+		<p class="eyebrow">TOPIC / {topicId.toUpperCase()}</p>
+		<h1>{topic.name}</h1>
+		<p>{topic.description}</p>
+		<strong>{articles.length} 篇文章</strong>
+	</section>
+	<section class="article-list shell article-list--page">
+		{articles.length > 0
+			? articles.map((article) => <ArticleCard article={article} />)
+			: <div class="empty-state"><h2>这个主题还在等待第一篇文章</h2><p>内容发布后会自动出现在这里。</p></div>}
+	</section>
+</BaseLayout>

@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatShortDate, getArticleYear, getPublishedArticles } from '../../lib/articles';
+
+const articles = await getPublishedArticles();
+const years = [...new Set(articles.map(getArticleYear))];
+---
+
+<BaseLayout title="年份归档｜TinyWall" description="按年份回看 TinyWall 的文章、简报与建站记录。">
+	<section class="page-hero shell">
+		<p class="eyebrow">ARCHIVE</p>
+		<h1>年份归档</h1>
+		<p>时间不是内容的终点，而是一条回到思考现场的路径。</p>
+	</section>
+	<section class="archive shell">
+		{years.map((year) => {
+			const yearArticles = articles.filter((article) => getArticleYear(article) === year);
+			return (
+				<div class="archive-year">
+					<div class="archive-year__heading">
+						<h2><a href={`/archive/${year}/`}>{year}</a></h2>
+						<span>{yearArticles.length} 篇</span>
+					</div>
+					<div class="archive-list">
+						{yearArticles.map((article) => (
+							<a href={`/articles/${article.id}/`}>
+								<time datetime={article.data.publishedAt.toISOString()}>{formatShortDate(article.data.publishedAt)}</time>
+								<span>{article.data.title}</span>
+							</a>
+						))}
+					</div>
+				</div>
+			);
+		})}
+	</section>
+</BaseLayout>

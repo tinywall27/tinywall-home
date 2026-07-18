@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { getArticleYear, getPublishedArticles, type Article } from '../../lib/articles';
+
+export async function getStaticPaths() {
+	const articles = await getPublishedArticles();
+	const years = [...new Set(articles.map(getArticleYear))];
+	return years.map((year) => ({
+		params: { year },
+		props: {
+			year,
+			articles: articles.filter((article) => getArticleYear(article) === year),
+		},
+	}));
+}
+
+interface Props {
+	year: string;
+	articles: Article[];
+}
+
+const { year, articles } = Astro.props;
+---
+
+<BaseLayout title={`${year} 年归档｜TinyWall`} description={`TinyWall 在 ${year} 年发布的文章与简报。`}>
+	<section class="page-hero shell page-hero--detail">
+		<a class="back-link" href="/archive/">← 全部年份</a>
+		<p class="eyebrow">YEAR IN REVIEW</p>
+		<h1>{year}</h1>
+		<p>这一年共保存 {articles.length} 篇文章。</p>
+	</section>
+	<section class="article-list shell article-list--page">
+		{articles.map((article) => <ArticleCard article={article} />)}
+	</section>
+</BaseLayout>

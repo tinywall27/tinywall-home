@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { topics } from '../../data/topics';
+import { getPublishedArticles } from '../../lib/articles';
+
+const articles = await getPublishedArticles();
+const topicStats = topics.map((topic) => ({
+	...topic,
+	count: articles.filter((article) => article.data.topics.includes(topic.id)).length,
+}));
+---
+
+<BaseLayout title="主题｜TinyWall" description="按主题浏览 TinyWall 的文章与每日简报。">
+	<section class="page-hero shell">
+		<p class="eyebrow">TOPICS</p>
+		<h1>主题</h1>
+		<p>让内容围绕长期关心的问题生长，而不是淹没在时间流里。</p>
+	</section>
+	<section class="topic-directory shell" aria-label="主题目录">
+		{topicStats.map((topic, index) => (
+			<a class="topic-directory__item" href={`/topics/${topic.id}/`}>
+				<span class="topic-directory__index">{String(index + 1).padStart(2, '0')}</span>
+				<div><h2>{topic.name}</h2><p>{topic.description}</p></div>
+				<strong>{topic.count} 篇</strong>
+			</a>
+		))}
+	</section>
+</BaseLayout>
