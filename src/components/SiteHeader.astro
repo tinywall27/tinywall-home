@@ -1,42 +1,37 @@
----
-const pathname = Astro.url.pathname;
-const navItems = [
-	{ href: '/', label: '首页' },
-	{ href: '/articles/', label: '文章' },
-	{ href: '/topics/', label: '主题' },
-	{ href: '/archive/', label: '年份' },
-];
-
-const isActive = (href: string) =>
-	href === '/' ? pathname === '/' : pathname.startsWith(href);
----
-
 <header class="site-header">
 	<div class="site-header__inner shell">
 		<a class="brand" href="/" aria-label="TinyWall 首页">
 			<span class="brand__mark" aria-hidden="true">T</span>
 			<span>TinyWall</span>
 		</a>
-
-		<nav class="desktop-nav" aria-label="主导航">
-			{navItems.map((item) => (
-				<a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
-					{item.label}
-				</a>
-			))}
-			<a class="search-link" href="/articles/#search">搜索 <span aria-hidden="true">⌕</span></a>
-		</nav>
-
-		<details class="mobile-nav">
-			<summary aria-label="打开导航菜单"><span aria-hidden="true">菜单</span></summary>
-			<nav aria-label="移动端导航">
-				{navItems.map((item) => (
-					<a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
-						{item.label}
-					</a>
-				))}
-				<a href="/articles/#search">搜索文章</a>
-			</nav>
-		</details>
+		<button class="nav-toggle" type="button" aria-controls="site-sidebar" aria-expanded="false">
+			<span>菜单</span><span class="nav-toggle__icon" aria-hidden="true"></span>
+		</button>
 	</div>
 </header>
+
+<script is:inline>
+	document.addEventListener('DOMContentLoaded', () => {
+		const navToggle = document.querySelector('.nav-toggle');
+		const siteSidebar = document.querySelector('#site-sidebar');
+		const navClose = document.querySelector('[data-nav-close]');
+		const mobileNavQuery = window.matchMedia('(max-width: 900px)');
+
+		const setNavigationOpen = (open) => {
+			if (!navToggle || !siteSidebar) return;
+			siteSidebar.toggleAttribute('data-open', open);
+			navClose?.toggleAttribute('data-open', open);
+			navToggle.setAttribute('aria-expanded', String(open));
+			document.body.classList.toggle('nav-open', open && mobileNavQuery.matches);
+		};
+
+		navToggle?.addEventListener('click', () => {
+			setNavigationOpen(!siteSidebar?.hasAttribute('data-open'));
+		});
+		navClose?.addEventListener('click', () => setNavigationOpen(false));
+		document.addEventListener('keydown', (event) => {
+			if (event.key === 'Escape') setNavigationOpen(false);
+		});
+		mobileNavQuery.addEventListener('change', () => setNavigationOpen(false));
+	});
+</script>
