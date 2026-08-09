@@ -5,6 +5,21 @@ export const topics = [
 		description: '模型、产品、研究与 AI 工作方式。',
 	},
 	{
+		id: 'finance',
+		name: '金融',
+		description: '金融体系、政策、投资研究与跨境资产。',
+	},
+	{
+		id: 'markets',
+		name: '市场',
+		description: '宏观环境、市场结构与价格信号。',
+	},
+	{
+		id: 'geography',
+		name: '地理',
+		description: '空间信息、区域知识与地理技术。',
+	},
+	{
 		id: 'daily-brief',
 		name: '每日简报',
 		description: '面向个人阅读的高密度每日信息窗口。',

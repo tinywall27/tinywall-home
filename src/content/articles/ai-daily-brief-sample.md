@@ -1,6 +1,5 @@
 ---
 title: AI Daily Brief｜版式示例
-slug: ai-daily-brief-sample
 description: 一篇用于演示未来 AI 每日简报结构、阅读节奏、主题筛选和来源管理方式的示例文章。
 publishedAt: 2026-07-17
 topics:
@@ -44,6 +43,6 @@ AI Daily Brief 的目标不是重复一天里出现的所有消息，而是提�
 
 ## 未来的生成流程
 
-真实版本将沿用以下路径：信息源被定时采集，AI 完成去重、归纳与初步分类，结果写入标准 Markdown 文件，随后提交到 GitHub。新的提交会触发 Cloudflare Pages 构建，并同步更新搜索、主题、年份归档与 RSS。
+真实版本计划沿用以下路径：信息源被定时采集，AI 完成去重、归纳与初步分类，结果写入标准 Markdown 文件和独立自动化分支，再创建 Pull Request。只有在人工核对来源、摘要和版权风险并合并到 `main` 后，Cloudflare Pages 才会构建发布，并同步更新搜索、主题、年份归档与 RSS。
 
 在自动化启用前，这篇示例会持续提醒读者：此处展示的是结构，不是新闻事实。

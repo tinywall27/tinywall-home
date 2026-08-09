@@ -1,0 +1,115 @@
+---
+import ArticleCard from '../../components/ArticleCard.astro';
+import ReadingRow from '../../components/ReadingRow.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { topics } from '../../data/topics';
+import { getCommandItems, getPublishedArticles, getPublishedReadings } from '../../lib/content';
+
+const [readings, articles, commandItems] = await Promise.all([
+	getPublishedReadings(),
+	getPublishedArticles(),
+	getCommandItems(),
+]);
+const activeTopicIds = new Set([
+	...readings.flatMap((reading) => reading.data.topics),
+	...articles.flatMap((article) => article.data.topics),
+]);
+const activeTopics = topics.filter((topic) => activeTopicIds.has(topic.id));
+---
+
+<BaseLayout
+	title="Reading｜TinyWall"
+	description="TinyWall 精选的外部阅读与自写长文入口，保留来源、摘要和推荐理由。"
+	commandItems={commandItems}
+>
+	<div class="page-shell">
+		<header class="page-heading">
+			<p class="eyebrow">READING</p>
+			<h1>把值得读的内容，放回可追溯的来源。</h1>
+			<p>外部文章直接前往原文；TinyWall 自写内容保留稳定页面、主题与年份归档。</p>
+		</header>
+
+		<div class="section-stack">
+			<section aria-labelledby="external-reading-title">
+				<header class="section-header">
+					<div>
+						<p class="eyebrow">CURATED READING</p>
+						<h2 id="external-reading-title">外部精选</h2>
+					</div>
+					<p class="meta">{readings.length} 条 · 按收录时间排序</p>
+				</header>
+				{activeTopics.length > 0 && (
+					<nav class="filter-chips reading-topics" aria-label="按主题浏览">
+						{activeTopics.map((topic) => <a href={`/topics/${topic.id}/`}>{topic.name}</a>)}
+					</nav>
+				)}
+				{readings.length > 0 ? (
+					<div class="content-list">
+						{readings.map((reading) => <ReadingRow reading={reading} />)}
+					</div>
+				) : (
+					<div class="empty-state panel">
+						<h3>还没有公开的外部精选</h3>
+						<p>只有经过来源核验的条目才会出现在这里，可以先阅读 TinyWall Articles。</p>
+						<a href="/articles/">前往 Articles <span aria-hidden="true">→</span></a>
+					</div>
+				)}
+			</section>
+
+			<section aria-labelledby="articles-title">
+				<header class="section-header">
+					<div>
+						<p class="eyebrow">TINYWALL ARTICLES</p>
+						<h2 id="articles-title">自写长文</h2>
+					</div>
+					<a href="/articles/">搜索全部文章 <span aria-hidden="true">→</span></a>
+				</header>
+				{articles.length > 0 ? (
+					<div class="content-list">
+						{articles.slice(0, 6).map((article) => <ArticleCard article={article} compact />)}
+					</div>
+				) : <p class="empty-state panel">还没有公开文章。</p>}
+			</section>
+
+			<section class="content-grid" aria-label="更多阅读方式">
+				<div class="content-grid__main panel reading-path">
+					<p class="eyebrow">TOPICS</p>
+					<h2>围绕长期问题继续</h2>
+					<p>跨越文章、笔记与外部阅读，按共同主题发现内容。</p>
+					<a href="/topics/">浏览全部主题 <span aria-hidden="true">→</span></a>
+				</div>
+				<div class="content-grid__aside panel reading-path">
+					<p class="eyebrow">ARCHIVE</p>
+					<h2>回到某一年</h2>
+					<p>按时间回看 TinyWall 保存和发布的内容。</p>
+					<a href="/archive/">打开年份归档 <span aria-hidden="true">→</span></a>
+				</div>
+			</section>
+		</div>
+	</div>
+</BaseLayout>
+
+<style>
+	.reading-topics {
+		margin-bottom: 1rem;
+	}
+
+	.reading-path {
+		display: grid;
+		align-content: start;
+		gap: 0.7rem;
+	}
+
+	.reading-path h2,
+	.reading-path p {
+		margin: 0;
+	}
+
+	.reading-path > p:not(.eyebrow) {
+		color: var(--text-muted);
+	}
+
+	.reading-path a {
+		margin-top: 0.35rem;
+	}
+</style>

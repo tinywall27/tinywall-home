@@ -1,0 +1,45 @@
+---
+import ContentRow from '../../components/ContentRow.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCommandItems, getDatedContentItems, getPublishedNotes } from '../../lib/content';
+
+const [notes, datedItems, commandItems] = await Promise.all([
+	getPublishedNotes(),
+	getDatedContentItems(),
+	getCommandItems(),
+]);
+const noteItems = datedItems.filter((item) => item.type === 'note');
+---
+
+<BaseLayout
+	title="Notes｜TinyWall"
+	description="TinyWall 的短笔记、阶段性想法与持续记录。"
+	commandItems={commandItems}
+>
+	<div class="page-shell">
+		<header class="page-heading">
+			<p class="eyebrow">NOTES</p>
+			<h1>让还在生长的想法，也有稳定的位置。</h1>
+			<p>短笔记不必伪装成完整文章，但仍然保留清楚的日期、主题和必要来源。</p>
+		</header>
+
+		<div class="section-stack">
+			<section aria-labelledby="notes-list-title">
+				<header class="section-header">
+					<h2 id="notes-list-title">全部笔记</h2>
+					<p class="meta">{notes.length} 则 · 按最近更新排序</p>
+				</header>
+				{noteItems.length > 0 ? (
+					<div class="content-list">
+						{noteItems.map((item) => <ContentRow item={item} />)}
+					</div>
+				) : (
+					<div class="empty-state panel">
+						<h3>还没有公开笔记</h3>
+						<p>新的阶段性记录会在通过内容检查后出现在这里。</p>
+					</div>
+				)}
+			</section>
+		</div>
+	</div>
+</BaseLayout>

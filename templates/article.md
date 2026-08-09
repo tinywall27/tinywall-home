@@ -1,6 +1,5 @@
 ---
 title: 文章标题
-slug: article-slug
 description: 用一到两句话说明文章内容，长度保持在 10 到 240 个字符之间。
 publishedAt: 2026-07-18
 # updatedAt: 2026-07-18

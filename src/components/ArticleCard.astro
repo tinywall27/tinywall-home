@@ -17,24 +17,31 @@ const searchText = [article.data.title, article.data.description, ...topicNames]
 ---
 
 <article
-	class:list={['article-card', { 'article-card--compact': compact }]}
+	class:list={['item-row', 'content-row', 'article-entry', { 'article-entry--compact': compact }]}
 	data-article-card={searchable ? '' : undefined}
 	data-url={searchable ? `/articles/${article.id}/` : undefined}
 	data-year={searchable ? getArticleYear(article) : undefined}
 	data-topics={searchable ? article.data.topics.join(',') : undefined}
 	data-search={searchable ? searchText : undefined}
+	data-pagefind-ignore
 >
-	<div class="article-card__meta">
-		<time datetime={article.data.publishedAt.toISOString()}>
-			{formatShortDate(article.data.publishedAt)}
-		</time>
-		{article.data.series === 'ai-daily-brief' && <span>AI Daily Brief</span>}
+	<div class="content-row__copy">
+		<div class="content-row__meta meta">
+			<span>文章</span>
+			<time datetime={article.data.publishedAt.toISOString()}>
+				{formatShortDate(article.data.publishedAt)}
+			</time>
+			{article.data.series === 'ai-daily-brief' && <span>AI Daily Brief</span>}
+		</div>
+		<h3 class="content-row__title"><a href={`/articles/${article.id}/`}>{article.data.title}</a></h3>
+		<p class="content-row__description">{article.data.description}</p>
+		<div class="content-row__topics">
+			{article.data.topics.map((topic) => (
+				<a class="chip" href={`/topics/${topic}/`}>{topicMap[topic].name}</a>
+			))}
+		</div>
 	</div>
-	<h3><a href={`/articles/${article.id}/`}>{article.data.title}</a></h3>
-	<p>{article.data.description}</p>
-	<div class="topic-list topic-list--small">
-		{article.data.topics.map((topic) => (
-			<a href={`/topics/${topic}/`}>{topicMap[topic].name}</a>
-		))}
-	</div>
+	<a class="content-row__external" href={`/articles/${article.id}/`} aria-label={`阅读文章：${article.data.title}`}>
+		<span aria-hidden="true">→</span>
+	</a>
 </article>

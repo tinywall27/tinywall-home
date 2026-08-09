@@ -1,28 +1,87 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { topics } from '../../data/topics';
-import { getPublishedArticles } from '../../lib/articles';
+import { getCommandItems, getDatedContentItems } from '../../lib/content';
 
-const articles = await getPublishedArticles();
-const topicStats = topics.map((topic) => ({
-	...topic,
-	count: articles.filter((article) => article.data.topics.includes(topic.id)).length,
-}));
+const [items, commandItems] = await Promise.all([getDatedContentItems(), getCommandItems()]);
+const topicStats = topics.map((topic) => {
+	const topicItems = items.filter((item) => item.topics.includes(topic.id));
+	return {
+		...topic,
+		count: topicItems.length,
+		articles: topicItems.filter((item) => item.type === 'article').length,
+		notes: topicItems.filter((item) => item.type === 'note').length,
+		readings: topicItems.filter((item) => item.type === 'reading').length,
+	};
+});
 ---
 
-<BaseLayout title="主题｜TinyWall" description="按主题浏览 TinyWall 的文章与每日简报。">
-	<section class="page-hero shell">
-		<p class="eyebrow">TOPICS</p>
-		<h1>主题</h1>
-		<p>让内容围绕长期关心的问题生长，而不是淹没在时间流里。</p>
-	</section>
-	<section class="topic-directory shell" aria-label="主题目录">
-		{topicStats.map((topic, index) => (
-			<a class="topic-directory__item" href={`/topics/${topic.id}/`}>
-				<span class="topic-directory__index">{String(index + 1).padStart(2, '0')}</span>
-				<div><h2>{topic.name}</h2><p>{topic.description}</p></div>
-				<strong>{topic.count} 篇</strong>
-			</a>
-		))}
-	</section>
+<BaseLayout
+	title="Topics｜TinyWall"
+	description="按主题发现 TinyWall 的文章、笔记与外部精选阅读。"
+	commandItems={commandItems}
+>
+	<div class="page-shell">
+		<header class="page-heading">
+			<p class="eyebrow">TOPICS</p>
+			<h1>围绕长期问题，而不是短暂热度。</h1>
+			<p>主题横跨 Articles、Notes 与 Reading，让同一问题在不同时间和内容形态中继续生长。</p>
+		</header>
+
+		<div class="section-stack">
+			<section aria-labelledby="topic-directory-title">
+				<header class="section-header">
+					<h2 id="topic-directory-title">主题目录</h2>
+					<p class="meta">{topicStats.length} 个主题</p>
+				</header>
+				<div class="content-list topic-list-v1" data-pagefind-ignore>
+					{topicStats.map((topic) => (
+						<a class="item-row topic-row" href={`/topics/${topic.id}/`}>
+							<span class="topic-row__copy">
+								<strong>{topic.name}</strong>
+								<small>{topic.description}</small>
+								<span class="meta">
+									<span>{topic.articles} 文章</span>
+									<span>{topic.notes} 笔记</span>
+									<span>{topic.readings} 外部阅读</span>
+								</span>
+							</span>
+							<span class="topic-row__count">{topic.count} <span aria-hidden="true">→</span></span>
+						</a>
+					))}
+				</div>
+			</section>
+		</div>
+	</div>
 </BaseLayout>
+
+<style>
+	.topic-row {
+		align-items: center;
+		text-decoration: none;
+	}
+
+	.topic-row:hover strong,
+	.topic-row:hover .topic-row__count {
+		color: var(--accent-strong);
+	}
+
+	.topic-row__copy {
+		display: grid;
+		gap: 0.3rem;
+	}
+
+	.topic-row__copy strong {
+		font-size: 1rem;
+	}
+
+	.topic-row__copy small {
+		color: var(--text-muted);
+		font-size: 0.82rem;
+	}
+
+	.topic-row__count {
+		color: var(--text-muted);
+		font-size: 0.8rem;
+	}
+</style>

@@ -1,7 +1,9 @@
 ---
-import SiteHeader from '../components/SiteHeader.astro';
-import SiteSidebar from '../components/SiteSidebar.astro';
+import CommandPalette, { type CommandItem } from '../components/CommandPalette.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import { siteMetadata } from '../data/site';
+import { getCommandItems } from '../lib/content';
 import '../styles/global.css';
 
 interface Props {
@@ -10,32 +12,38 @@ interface Props {
 	canonical?: string;
 	type?: 'website' | 'article';
 	publishedAt?: Date;
+	commandItems?: CommandItem[];
 }
 
 const {
-	title = 'TinyWall｜个人知识与项目入口',
-	description = 'TinyWall 是一个连接重要项目、文章与每日阅读的个人知识门户。',
+	title = `${siteMetadata.name}｜个人信息与知识入口`,
+	description = siteMetadata.description,
 	canonical = Astro.url.pathname,
 	type = 'website',
 	publishedAt,
+	commandItems,
 } = Astro.props;
-const siteUrl = new URL(canonical, Astro.site ?? 'https://tinywall.cc');
-const ogImage = new URL('/og.png', Astro.site ?? 'https://tinywall.cc');
+const resolvedCommandItems = commandItems ?? await getCommandItems();
+const siteUrl = new URL(canonical, Astro.site ?? siteMetadata.url);
+const ogImage = new URL('/og-tinywall.png', Astro.site ?? siteMetadata.url);
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<html lang={siteMetadata.lang}>
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="generator" content={Astro.generator} />
-		<meta name="theme-color" content="#f4eee3" />
+		<meta name="color-scheme" content="light dark" />
+		<meta name="theme-color" content="#fafaf8" media="(prefers-color-scheme: light)" />
+		<meta name="theme-color" content="#0c0d0c" media="(prefers-color-scheme: dark)" />
 		<meta name="description" content={description} />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="canonical" href={siteUrl} />
-		<link rel="alternate" type="application/rss+xml" title="TinyWall RSS" href="/rss.xml" />
+		<link rel="alternate" type="application/rss+xml" title={`${siteMetadata.name} RSS`} href="/rss.xml" />
 		<title>{title}</title>
 		<meta property="og:type" content={type} />
-		<meta property="og:site_name" content="TinyWall" />
+		<meta property="og:site_name" content={siteMetadata.name} />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:url" content={siteUrl} />
@@ -50,14 +58,13 @@ const ogImage = new URL('/og.png', Astro.site ?? 'https://tinywall.cc');
 	<body>
 		<a class="skip-link" href="#main-content">跳到正文</a>
 		<SiteHeader />
-		<div class="site-frame">
-			<SiteSidebar />
-			<div class="site-stage">
-				<main id="main-content">
-					<slot />
-				</main>
-				<SiteFooter />
-			</div>
+		<div class="site-stage">
+			<main id="main-content" tabindex="-1">
+				<slot />
+			</main>
+			<SiteFooter />
 		</div>
+		<CommandPalette items={resolvedCommandItems} />
+		<script is:inline type="module" src="/site-shell.js"></script>
 	</body>
 </html>

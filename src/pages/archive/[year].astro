@@ -1,36 +1,75 @@
 ---
+import ContentRow from '../../components/ContentRow.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import ArticleCard from '../../components/ArticleCard.astro';
-import { getArticleYear, getPublishedArticles, type Article } from '../../lib/articles';
+import { getCommandItems, getDatedContentItems, type DatedContentItem } from '../../lib/content';
 
 export async function getStaticPaths() {
-	const articles = await getPublishedArticles();
-	const years = [...new Set(articles.map(getArticleYear))];
+	const items = await getDatedContentItems();
+	const years = [...new Set(items.map((item) => String(item.date.getFullYear())))];
 	return years.map((year) => ({
 		params: { year },
 		props: {
 			year,
-			articles: articles.filter((article) => getArticleYear(article) === year),
+			items: items.filter((item) => String(item.date.getFullYear()) === year),
 		},
 	}));
 }
 
 interface Props {
 	year: string;
-	articles: Article[];
+	items: DatedContentItem[];
 }
 
-const { year, articles } = Astro.props;
+const { year, items } = Astro.props;
+const commandItems = await getCommandItems();
+const typeCounts = {
+	article: items.filter((item) => item.type === 'article').length,
+	note: items.filter((item) => item.type === 'note').length,
+	reading: items.filter((item) => item.type === 'reading').length,
+};
 ---
 
-<BaseLayout title={`${year} 年归档｜TinyWall`} description={`TinyWall 在 ${year} 年发布的文章与简报。`}>
-	<section class="page-hero shell page-hero--detail">
-		<a class="back-link" href="/archive/">← 全部年份</a>
-		<p class="eyebrow">YEAR IN REVIEW</p>
-		<h1>{year}</h1>
-		<p>这一年共保存 {articles.length} 篇文章。</p>
-	</section>
-	<section class="article-list shell article-list--page">
-		{articles.map((article) => <ArticleCard article={article} />)}
-	</section>
+<BaseLayout
+	title={`${year} 年归档｜TinyWall`}
+	description={`TinyWall 在 ${year} 年发布或收录的文章、笔记与外部阅读。`}
+	commandItems={commandItems}
+>
+	<div class="page-shell">
+		<header class="page-heading">
+			<a class="back-link" href="/archive/">← 全部年份</a>
+			<p class="eyebrow">YEAR IN REVIEW</p>
+			<h1>{year}</h1>
+			<p>这一年共保存 {items.length} 条公开内容。</p>
+			<div class="meta archive-summary">
+				<span>{typeCounts.article} 文章</span>
+				<span>{typeCounts.note} 笔记</span>
+				<span>{typeCounts.reading} 外部阅读</span>
+			</div>
+		</header>
+
+		<div class="section-stack">
+			<section aria-labelledby="year-content-title">
+				<header class="section-header">
+					<h2 id="year-content-title">全年内容</h2>
+					<p class="meta">按日期从新到旧</p>
+				</header>
+				{items.length > 0 ? (
+					<div class="content-list">
+						{items.map((item) => <ContentRow item={item} />)}
+					</div>
+				) : (
+					<div class="empty-state panel">
+						<h2>这一年没有公开内容</h2>
+						<p>返回全部年份继续浏览。</p>
+					</div>
+				)}
+			</section>
+		</div>
+	</div>
 </BaseLayout>
+
+<style>
+	.archive-summary {
+		margin-top: 1.15rem;
+	}
+</style>

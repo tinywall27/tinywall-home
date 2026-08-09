@@ -6,9 +6,13 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "dev": "astro dev",
+    "dev": "astro dev --background",
     "check": "astro check",
-    "build": "astro check && astro build && pagefind --site dist",
+    "validate": "node scripts/validate-source.mjs",
+    "validate:scripts": "node --check public/site-shell.js && node --check public/article-search.js",
+    "validate:site": "node scripts/validate-site.mjs",
+    "build": "npm run validate && npm run validate:scripts && astro check && astro build && pagefind --site dist",
+    "quality": "npm run build && npm run validate:site",
     "preview": "astro preview",
     "astro": "astro"
   },
