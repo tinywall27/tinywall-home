@@ -1,0 +1,53 @@
+---
+import { topicMap } from '../data/topics';
+import { formatShortDate, type DatedContentItem } from '../lib/content';
+
+interface Props {
+	item: DatedContentItem;
+	showDescription?: boolean;
+}
+
+const { item, showDescription = true } = Astro.props;
+const typeLabels: Record<DatedContentItem['type'], string> = {
+	article: '文章',
+	note: '笔记',
+	reading: '外部阅读',
+};
+---
+
+<article class="item-row content-row" data-pagefind-ignore>
+	<div class="content-row__copy">
+		<div class="content-row__meta meta">
+			<span>{typeLabels[item.type]}</span>
+			<time datetime={item.date.toISOString()}>{formatShortDate(item.date)}</time>
+			{item.source && <span>{item.source}</span>}
+		</div>
+		<h3 class="content-row__title">
+			<a
+				href={item.href}
+				target={item.external ? '_blank' : undefined}
+				rel={item.external ? 'noopener noreferrer' : undefined}
+			>
+				{item.title}
+				{item.external && <span class="visually-hidden">（在新标签页打开）</span>}
+			</a>
+		</h3>
+		{showDescription && item.description && (
+			<p class="content-row__description">{item.description}</p>
+		)}
+		<div class="content-row__topics">
+			{item.topics.map((topic) => (
+				<a class="chip" href={`/topics/${topic}/`}>{topicMap[topic].name}</a>
+			))}
+		</div>
+	</div>
+	<a
+		class="content-row__external"
+		href={item.href}
+		target={item.external ? '_blank' : undefined}
+		rel={item.external ? 'noopener noreferrer' : undefined}
+		aria-label={`${item.external ? '打开外部内容' : '阅读'}：${item.title}`}
+	>
+		<span aria-hidden="true">{item.external ? '↗' : '→'}</span>
+	</a>
+</article>

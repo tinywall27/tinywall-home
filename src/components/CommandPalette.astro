@@ -1,0 +1,105 @@
+---
+import { primaryNavigation } from '../data/navigation';
+
+export interface CommandItem {
+	type: 'article' | 'note' | 'reading' | 'project' | 'link' | 'navigation';
+	title: string;
+	description?: string;
+	url: string;
+	external?: boolean;
+	keywords?: string[];
+}
+
+interface Props {
+	items?: CommandItem[];
+}
+
+const { items = [] } = Astro.props;
+const typeLabels: Record<CommandItem['type'], string> = {
+	article: '文章',
+	note: '笔记',
+	reading: '阅读',
+	project: '项目',
+	link: '链接',
+	navigation: '导航',
+};
+const navigationItems: CommandItem[] = primaryNavigation.map((item) => ({
+	type: 'navigation',
+	title: item.label,
+	description: item.href === '/' ? '返回 Today' : `前往 ${item.label}`,
+	url: item.href,
+	keywords: [item.label, item.href],
+}));
+const commandItems = [...navigationItems, ...items].filter(
+	(item, index, all) => all.findIndex((candidate) => candidate.url === item.url) === index,
+);
+---
+
+<dialog class="command-dialog" id="command-palette" aria-labelledby="command-title" data-command-dialog>
+	<div class="command-palette">
+		<header class="command-palette__header">
+			<div>
+				<p class="command-palette__eyebrow">TINYWALL COMMAND</p>
+				<h2 id="command-title">搜索与快速前往</h2>
+			</div>
+			<form method="dialog">
+				<button class="command-close" type="submit" aria-label="关闭命令面板">Esc</button>
+			</form>
+		</header>
+
+		<label class="command-search" for="command-query">
+			<span aria-hidden="true">⌕</span>
+			<span class="visually-hidden">搜索文章、笔记、阅读、项目或链接</span>
+			<input
+				id="command-query"
+				type="search"
+				placeholder="搜索文章、笔记、阅读、项目或链接…"
+				autocomplete="off"
+				spellcheck="false"
+				aria-controls="command-results"
+				aria-describedby="command-help command-status"
+			/>
+		</label>
+
+		<div class="command-palette__status" id="command-status" data-command-status aria-live="polite">
+			快速入口
+		</div>
+		<div class="command-results" id="command-results" role="list" data-command-results>
+			{commandItems.map((item, index) => (
+				<a
+					class="command-item"
+					id={`command-item-${index}`}
+					href={item.url}
+					target={item.external ? '_blank' : undefined}
+					rel={item.external ? 'noopener noreferrer' : undefined}
+					role="listitem"
+					data-command-item
+					data-command-static
+					data-command-type={item.type}
+					data-command-search={[item.title, item.description, ...(item.keywords ?? [])].filter(Boolean).join(' ').toLocaleLowerCase('zh-CN')}
+				>
+					<span class="command-item__type">{typeLabels[item.type]}</span>
+					<span class="command-item__copy">
+						<strong>
+							{item.title}
+							{item.external && <span class="visually-hidden">（在新标签页打开）</span>}
+						</strong>
+						{item.description && <small>{item.description}</small>}
+					</span>
+					<span class="command-item__arrow" aria-hidden="true">{item.external ? '↗' : '→'}</span>
+				</a>
+			))}
+			<div data-command-pagefind></div>
+		</div>
+		<div class="command-empty" data-command-empty hidden>
+			<strong>没有找到匹配内容</strong>
+			<span>可以换一个更短的关键词，或使用上方五个核心入口。</span>
+		</div>
+
+		<footer class="command-palette__footer" id="command-help">
+			<span><kbd>↑</kbd><kbd>↓</kbd> 选择</span>
+			<span><kbd>Enter</kbd> 打开</span>
+			<span><kbd>Esc</kbd> 关闭</span>
+		</footer>
+	</div>
+</dialog>

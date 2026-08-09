@@ -1,0 +1,58 @@
+---
+import { topicMap } from '../data/topics';
+import { formatShortDate, type Reading } from '../lib/content';
+
+interface Props {
+	reading: Reading;
+	showReason?: boolean;
+}
+
+const { reading, showReason = true } = Astro.props;
+---
+
+<article class="item-row content-row" data-pagefind-ignore>
+	<div class="content-row__copy">
+		<div class="content-row__meta meta">
+			<span>{reading.data.source}</span>
+			<time datetime={reading.data.curatedAt.toISOString()}>
+				收录于 {formatShortDate(reading.data.curatedAt)}
+			</time>
+			{reading.data.readingMinutes && <span>约 {reading.data.readingMinutes} 分钟</span>}
+		</div>
+		<h3 class="content-row__title">
+			<a href={reading.data.url} target="_blank" rel="noopener noreferrer">
+				{reading.data.title}<span class="visually-hidden">（在新标签页打开原文）</span>
+			</a>
+		</h3>
+		<p class="content-row__description">{reading.data.summary}</p>
+		{showReason && <p class="reading-reason"><strong>为什么值得读：</strong>{reading.data.reason}</p>}
+		<div class="content-row__topics">
+			{reading.data.topics.map((topic) => (
+				<a class="chip" href={`/topics/${topic}/`}>{topicMap[topic].name}</a>
+			))}
+		</div>
+	</div>
+	<a
+		class="content-row__external"
+		href={reading.data.url}
+		target="_blank"
+		rel="noopener noreferrer"
+		aria-label={`打开原文：${reading.data.title}`}
+	>
+		<span aria-hidden="true">↗</span>
+	</a>
+</article>
+
+<style>
+	.reading-reason {
+		margin: 0;
+		color: var(--text-muted);
+		font-size: 0.82rem;
+		line-height: 1.55;
+	}
+
+	.reading-reason strong {
+		color: var(--text);
+		font-weight: 650;
+	}
+</style>

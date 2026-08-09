@@ -1,0 +1,77 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { projects, projectStatuses } from '../../data/projects';
+import { getCommandItems } from '../../lib/content';
+
+const commandItems = await getCommandItems();
+const orderedProjects = projects.toSorted((a, b) => a.order - b.order);
+---
+
+<BaseLayout
+	title="Projects｜TinyWall"
+	description="TinyWall 正在建设、维护或保存的个人项目入口。"
+	commandItems={commandItems}
+>
+	<div class="page-shell">
+		<header class="page-heading">
+			<p class="eyebrow">PROJECTS</p>
+			<h1>持续建设，而不是一次展示。</h1>
+			<p>这里集中记录正在推进的项目、当前状态与可以直接使用的公开入口。</p>
+		</header>
+
+		<div class="section-stack">
+			<section aria-labelledby="project-list-title">
+				<header class="section-header">
+					<h2 id="project-list-title">项目目录</h2>
+					<p class="meta">{orderedProjects.length} 个项目</p>
+				</header>
+				{orderedProjects.length > 0 ? (
+					<div class="project-list" data-pagefind-ignore>
+						{orderedProjects.map((project) => (
+							<article class="project-item" id={project.id}>
+								<div class="project-item__copy">
+									<div class="project-item__meta">
+										<span class="chip">{projectStatuses[project.status]}</span>
+										<span>{project.tags.join(' · ')}</span>
+									</div>
+									<h3 class="project-item__title">
+										{project.url ? (
+											<a href={project.url} target="_blank" rel="noopener noreferrer">
+												{project.title}<span class="visually-hidden">（在新标签页打开项目）</span>
+											</a>
+										) : project.title}
+									</h3>
+									<p class="project-item__description">{project.description}</p>
+									{'repository' in project && project.repository && (
+										<p class="project-item__repository">
+											<a href={project.repository} target="_blank" rel="noopener noreferrer">
+												查看代码仓库 <span aria-hidden="true">↗</span><span class="visually-hidden">（在新标签页打开）</span>
+											</a>
+										</p>
+									)}
+								</div>
+								{project.url && (
+									<a class="external-mark" href={project.url} target="_blank" rel="noopener noreferrer" aria-label={`打开项目：${project.title}`}>
+										<span aria-hidden="true">↗</span>
+									</a>
+								)}
+							</article>
+						))}
+					</div>
+				) : (
+					<div class="empty-state panel">
+						<h3>暂时没有公开项目</h3>
+						<p>项目数据准备好后会集中出现在这里。</p>
+					</div>
+				)}
+			</section>
+		</div>
+	</div>
+</BaseLayout>
+
+<style>
+	.project-item__repository {
+		margin: 0.25rem 0 0;
+		font-size: 0.78rem;
+	}
+</style>

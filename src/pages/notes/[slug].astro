@@ -1,0 +1,101 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { topicMap } from '../../data/topics';
+import { formatDate, getCommandItems, getPublishedNotes, type Note } from '../../lib/content';
+
+export async function getStaticPaths() {
+	const notes = await getPublishedNotes();
+	return notes.map((note) => ({ params: { slug: note.id }, props: { note } }));
+}
+
+interface Props {
+	note: Note;
+}
+
+const { note } = Astro.props;
+const { Content } = await render(note);
+const commandItems = await getCommandItems();
+const displayDate = note.data.updatedAt ?? note.data.publishedAt;
+const year = String(displayDate.getFullYear());
+---
+
+<BaseLayout
+	title={`${note.data.title}｜TinyWall`}
+	description={note.data.description ?? `TinyWall 笔记：${note.data.title}`}
+	canonical={`/notes/${note.id}/`}
+	type="article"
+	publishedAt={note.data.publishedAt}
+	commandItems={commandItems}
+>
+	<article
+		class="article-page page-shell note-page"
+		data-pagefind-body
+		data-pagefind-filter={`year:${year}`}
+		data-pagefind-sort={`date:${displayDate.toISOString()}`}
+	>
+		<header class="article-header">
+			<div class="article-header__meta meta">
+				<span data-pagefind-meta="type">Note</span>
+				<time datetime={note.data.publishedAt.toISOString()}>发布于 {formatDate(note.data.publishedAt)}</time>
+				{note.data.updatedAt && (
+					<time datetime={note.data.updatedAt.toISOString()}>更新于 {formatDate(note.data.updatedAt)}</time>
+				)}
+			</div>
+			<h1 data-pagefind-meta="title">{note.data.title}</h1>
+			{note.data.description && (
+				<p class="article-header__description" data-pagefind-meta="description">{note.data.description}</p>
+			)}
+			<div class="topic-list">
+				{note.data.topics.map((topic) => (
+					<a href={`/topics/${topic}/`} data-pagefind-filter={`topic:${topic}`}>
+						{topicMap[topic].name}
+					</a>
+				))}
+			</div>
+		</header>
+
+		<div class="article-layout note-layout">
+			<div class="prose">
+				<Content />
+				{note.data.sources && note.data.sources.length > 0 && (
+					<section class="sources" aria-labelledby="sources-title">
+						<h2 id="sources-title">参考来源</h2>
+						<ol>
+							{note.data.sources.map((source) => (
+								<li>
+									<a href={source.url} target="_blank" rel="noopener noreferrer">
+										{source.title}<span class="visually-hidden">（在新标签页打开）</span>
+									</a>
+								</li>
+							))}
+						</ol>
+					</section>
+				)}
+			</div>
+		</div>
+
+		<nav class="note-back" aria-label="笔记导航">
+			<a href="/notes/">← 返回全部笔记</a>
+		</nav>
+	</article>
+</BaseLayout>
+
+<style>
+	.note-page .article-header,
+	.note-layout,
+	.note-back {
+		max-width: var(--measure);
+		margin-inline: auto;
+	}
+
+	.note-layout {
+		display: block;
+	}
+
+	.note-back {
+		margin-top: 3rem;
+		padding-top: 1.2rem;
+		border-top: 1px solid var(--line);
+	}
+</style>

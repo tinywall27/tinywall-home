@@ -1,12 +1,30 @@
-<footer class="site-footer">
+---
+import { secondaryNavigation } from '../data/navigation';
+import { siteMetadata } from '../data/site';
+
+const isExternal = (href: string) => href.startsWith('http://') || href.startsWith('https://');
+---
+
+<footer class="site-footer" data-pagefind-ignore>
 	<div class="shell site-footer__inner">
-		<div>
-			<a class="brand brand--footer" href="/">TinyWall</a>
-			<p>把项目、文章与持续思考，安放在同一个入口。</p>
+		<div class="site-footer__about">
+			<a class="brand brand--footer" href="/">{siteMetadata.name}</a>
+			<p>把每天值得关注的信息、长期思考与常用入口放在一起。</p>
 		</div>
-		<div class="footer-links">
-			<a href="https://github.com/tinywall27/tinywall-home" rel="me">GitHub</a>
-			<span>© {new Date().getFullYear()}</span>
+		<nav class="footer-nav" aria-label="次级导航">
+			{secondaryNavigation.map((item) => (
+				<a
+					href={item.href}
+					target={isExternal(item.href) ? '_blank' : undefined}
+					rel={isExternal(item.href) ? 'noopener noreferrer' : undefined}
+				>
+					{item.label}{isExternal(item.href) && <span aria-hidden="true"> ↗</span>}
+				</a>
+			))}
+		</nav>
+		<div class="site-footer__meta">
+			<span>© {new Date().getFullYear()} {siteMetadata.name}</span>
+			<span>静态构建 · 外观跟随系统</span>
 		</div>
 	</div>
 </footer>

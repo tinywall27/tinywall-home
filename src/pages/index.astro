@@ -1,132 +1,279 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ArticleCard from '../components/ArticleCard.astro';
-import { topics } from '../data/topics';
-import { getArticleYear, getPublishedArticles } from '../lib/articles';
+import ReadingRow from '../components/ReadingRow.astro';
+import { projectStatuses } from '../data/projects';
+import { topicMap } from '../data/topics';
+import { formatDate, formatShortDate, getCommandItems, getTodayContent } from '../lib/content';
 
-const articles = await getPublishedArticles();
-const latestBrief = articles.find((article) => article.data.series === 'ai-daily-brief');
-const recentArticles = articles
-	.filter((article) => article.id !== latestBrief?.id)
-	.slice(0, 4);
-const topicStats = topics
-	.map((topic) => ({
-		...topic,
-		count: articles.filter((article) => article.data.topics.includes(topic.id)).length,
-	}))
-	.filter((topic) => topic.count > 0)
-	.sort((a, b) => b.count - a.count);
-const years = [...new Set(articles.map(getArticleYear))];
+const [today, commandItems] = await Promise.all([getTodayContent(), getCommandItems()]);
+const generatedAt = new Date();
+const intelligenceGroups = Object.entries(
+	today.intelligence.reduce<Record<string, typeof today.intelligence>>((groups, reading) => {
+		const primaryTopic = reading.data.topics[0];
+		(groups[primaryTopic] ??= []).push(reading);
+		return groups;
+	}, {}),
+);
 ---
 
-<BaseLayout>
-	<section class="hero shell">
-		<div class="hero__copy">
-			<p class="eyebrow">PERSONAL KNOWLEDGE PORTAL · 个人知识门户</p>
-			<h1>把重要的项目，<br />和每天值得读的内容放在一起。</h1>
-			<p class="hero__lede">
-				TinyWall 是我的个人知识入口。这里连接正在建设的项目，也保存文章、简报与持续思考。
+<BaseLayout
+	title="Today｜TinyWall"
+	description="TinyWall 的今日信息入口：精选阅读、常用链接、个人项目与近期笔记。"
+	commandItems={commandItems}
+>
+	<div class="page-shell">
+		<header class="today-header">
+			<p class="eyebrow today-date">
+				<time datetime={generatedAt.toISOString()} data-today-date>{formatDate(generatedAt)}</time>
+				<span aria-hidden="true">·</span>
+				<span>Today</span>
 			</p>
-			<div class="hero__actions">
-				<a class="button button--primary" href="/articles/">开始阅读</a>
-				<a class="text-link" href="#projects">浏览项目 <span aria-hidden="true">↓</span></a>
-			</div>
-		</div>
-		<div class="hero__note" aria-label="TinyWall 说明">
-			<span class="hero__note-number">01</span>
-			<p>一个安静、清晰、持续更新的窗口。</p>
-			<small>项目 · 阅读 · 归档</small>
-		</div>
-	</section>
+			<h1>今天，先看真正值得关注的内容。</h1>
+			<p>从一份可信的阅读线索开始，再回到项目、工具与正在积累的想法。</p>
+		</header>
 
-	<section class="projects-section shell" id="projects" aria-labelledby="projects-title">
-		<div class="section-heading section-heading--line">
-			<div>
-				<p class="eyebrow">SELECTED PROJECTS</p>
-				<h2 id="projects-title">重要项目</h2>
-			</div>
-			<p>从这里快速进入 TinyWall 旗下正在持续建设的专题项目。</p>
-		</div>
+		<div class="section-stack">
+			<section aria-labelledby="intelligence-title">
+				<header class="section-header">
+					<div>
+						<p class="eyebrow">TODAY INTELLIGENCE</p>
+						<h2 id="intelligence-title">值得关注</h2>
+					</div>
+					{today.asOf && (
+						<p class="meta">
+							<span>内容截至</span>
+							<time datetime={today.asOf.toISOString()}>{formatShortDate(today.asOf)}</time>
+						</p>
+					)}
+				</header>
+				{intelligenceGroups.length > 0 ? (
+					<div class="intelligence-groups">
+						{intelligenceGroups.map(([topic, readings]) => (
+							<section class="intelligence-group" aria-labelledby={`intelligence-${topic}`}>
+								<h3 id={`intelligence-${topic}`}>{topicMap[topic as keyof typeof topicMap].name}</h3>
+								<div class="intelligence-list">
+									{readings.map((reading) => <ReadingRow reading={reading} showReason={false} />)}
+								</div>
+							</section>
+						))}
+					</div>
+				) : (
+					<div class="empty-state panel">
+						<h3>今天暂时没有更多资讯</h3>
+						<p>高质量内容不足时不凑数，可以先查看下面的 Daily Read 或完整 Reading。</p>
+						<a href="/reading/">前往 Reading <span aria-hidden="true">→</span></a>
+					</div>
+				)}
+			</section>
 
-		<div class="project-grid">
-			<a class="project-card project-card--fund" href="https://fund.tinywall.cc" target="_blank" rel="noopener noreferrer">
-				<div class="project-card__top">
-					<span>01 / KNOWLEDGE BASE</span>
-					<span aria-hidden="true">↗</span>
+			<section class="today-grid" aria-label="每日阅读与快捷入口">
+				<div class="daily-feature">
+					<header class="section-header">
+						<div>
+							<p class="eyebrow">DAILY READ</p>
+							<h2>今天值得细读</h2>
+						</div>
+						<a href="/reading/">全部阅读 <span aria-hidden="true">→</span></a>
+					</header>
+					{today.dailyRead ? (
+						<article class="daily-feature__entry" data-pagefind-ignore>
+							<div class="meta">
+								<span>{today.dailyRead.data.source}</span>
+								<time datetime={today.dailyRead.data.curatedAt.toISOString()}>
+									收录于 {formatShortDate(today.dailyRead.data.curatedAt)}
+								</time>
+								{today.dailyRead.data.readingMinutes && <span>约 {today.dailyRead.data.readingMinutes} 分钟</span>}
+							</div>
+							<h3>
+								<a href={today.dailyRead.data.url} target="_blank" rel="noopener noreferrer">
+									{today.dailyRead.data.title}<span class="visually-hidden">（在新标签页打开原文）</span>
+								</a>
+							</h3>
+							<p>{today.dailyRead.data.summary}</p>
+							<p class="daily-feature__reason"><strong>为什么值得读：</strong>{today.dailyRead.data.reason}</p>
+							<div class="filter-chips">
+								{today.dailyRead.data.topics.map((topic) => (
+									<a href={`/topics/${topic}/`}>{topicMap[topic].name}</a>
+								))}
+							</div>
+						</article>
+					) : (
+						<div class="empty-state">
+							<h3>还没有今日精选</h3>
+							<p>下一条经过来源核验的阅读会出现在这里。</p>
+						</div>
+					)}
 				</div>
-				<div>
-					<p class="project-card__kicker">FUND</p>
-					<h3>跨境基金知识库</h3>
-					<p>围绕跨境基金、市场结构与投资研究建立的知识索引。</p>
-				</div>
-				<strong>fund.tinywall.cc</strong>
-			</a>
 
-			<a class="project-card project-card--geo" href="https://geo.tinywall.cc" target="_blank" rel="noopener noreferrer">
-				<div class="project-card__top">
-					<span>02 / GEO × AI</span>
-					<span aria-hidden="true">↗</span>
-				</div>
-				<div>
-					<p class="project-card__kicker">GEO</p>
-					<h3>地理 AI 项目</h3>
-					<p>探索空间信息、地理知识与人工智能之间的新连接。</p>
-				</div>
-				<strong>geo.tinywall.cc</strong>
-			</a>
-		</div>
-	</section>
+				<aside class="quick-links" aria-labelledby="quick-links-title">
+					<header class="section-header">
+						<div>
+							<p class="eyebrow">QUICK LINKS</p>
+							<h2 id="quick-links-title">常用入口</h2>
+						</div>
+						<a href="/links/">全部 <span aria-hidden="true">→</span></a>
+					</header>
+					{today.quickLinks.length > 0 ? (
+						<ul>
+							{today.quickLinks.map((link) => (
+								<li>
+									<a href={link.url} target="_blank" rel="noopener noreferrer">
+										<span>{link.title}</span>
+										<span aria-hidden="true">↗</span>
+										<span class="visually-hidden">（在新标签页打开）</span>
+									</a>
+								</li>
+							))}
+						</ul>
+					) : (
+						<p class="empty-state">暂时没有高频链接。</p>
+					)}
+				</aside>
+			</section>
 
-	{latestBrief && (
-		<section class="brief-section">
-			<div class="shell brief-section__inner">
-				<div class="brief-intro">
-					<p class="eyebrow">AI DAILY BRIEF</p>
-					<h2>每日信息窗口</h2>
-					<p>未来由 AI 每日整理值得关注的研究、产品与趋势。现在先从一篇版式示例开始。</p>
-					<a class="text-link" href="/topics/daily-brief/">查看全部简报 <span aria-hidden="true">→</span></a>
-				</div>
-				<ArticleCard article={latestBrief} />
-			</div>
-		</section>
-	)}
+			<section aria-labelledby="projects-title">
+				<header class="section-header">
+					<div>
+						<p class="eyebrow">PROJECTS</p>
+						<h2 id="projects-title">正在做的项目</h2>
+					</div>
+					<a href="/projects/">全部项目 <span aria-hidden="true">→</span></a>
+				</header>
+				{today.projects.length > 0 ? (
+					<div class="project-list" data-pagefind-ignore>
+						{today.projects.map((project) => (
+							<article class="project-item">
+								<div class="project-item__copy">
+									<div class="project-item__meta">
+										<span>{projectStatuses[project.status]}</span>
+										<span>{project.tags.join(' · ')}</span>
+									</div>
+									<h3 class="project-item__title">
+										<a
+											href={project.url ?? `/projects/#${project.id}`}
+											target={project.url ? '_blank' : undefined}
+											rel={project.url ? 'noopener noreferrer' : undefined}
+										>
+											{project.title}{project.url && <span class="visually-hidden">（在新标签页打开）</span>}
+										</a>
+									</h3>
+									<p class="project-item__description">{project.description}</p>
+								</div>
+								<a
+									class="external-mark"
+									href={project.url ?? `/projects/#${project.id}`}
+									target={project.url ? '_blank' : undefined}
+									rel={project.url ? 'noopener noreferrer' : undefined}
+									aria-label={`${project.url ? '打开' : '查看'}项目：${project.title}`}
+								>
+									<span aria-hidden="true">{project.url ? '↗' : '→'}</span>
+								</a>
+							</article>
+						))}
+					</div>
+				) : <p class="empty-state panel">项目列表暂时为空。</p>}
+			</section>
 
-	<section class="reading-section shell" aria-labelledby="reading-title">
-		<div class="section-heading section-heading--line">
-			<div>
-				<p class="eyebrow">LATEST READING</p>
-				<h2 id="reading-title">近期文章</h2>
-			</div>
-			<a class="text-link" href="/articles/">全部文章 <span aria-hidden="true">→</span></a>
+			<section aria-labelledby="notes-title">
+				<header class="section-header">
+					<div>
+						<p class="eyebrow">RECENT NOTES</p>
+						<h2 id="notes-title">最近笔记</h2>
+					</div>
+					<a href="/notes/">全部笔记 <span aria-hidden="true">→</span></a>
+				</header>
+				{today.recentNotes.length > 0 ? (
+					<div class="content-list" data-pagefind-ignore>
+						{today.recentNotes.map((note) => (
+							<article class="item-row content-row">
+								<div class="content-row__copy">
+									<div class="meta">
+										<time datetime={(note.data.updatedAt ?? note.data.publishedAt).toISOString()}>
+											{formatShortDate(note.data.updatedAt ?? note.data.publishedAt)}
+										</time>
+										{note.data.updatedAt && <span>已更新</span>}
+									</div>
+									<h3 class="content-row__title"><a href={`/notes/${note.id}/`}>{note.data.title}</a></h3>
+									{note.data.description && <p class="content-row__description">{note.data.description}</p>}
+								</div>
+								<a class="content-row__external" href={`/notes/${note.id}/`} aria-label={`阅读笔记：${note.data.title}`}>
+									<span aria-hidden="true">→</span>
+								</a>
+							</article>
+						))}
+					</div>
+				) : <p class="empty-state panel">还没有公开笔记。</p>}
+			</section>
 		</div>
-		<div class="article-grid">
-			{recentArticles.map((article) => <ArticleCard article={article} compact />)}
-		</div>
-	</section>
-
-	<section class="explore-section shell" aria-labelledby="explore-title">
-		<div class="section-heading">
-			<p class="eyebrow">EXPLORE THE ARCHIVE</p>
-			<h2 id="explore-title">从主题或年份继续</h2>
-		</div>
-		<div class="explore-grid">
-			<div class="explore-panel">
-				<span class="explore-panel__label">主题</span>
-				<div class="large-link-list">
-					{topicStats.map((topic) => (
-						<a href={`/topics/${topic.id}/`}>
-							<span>{topic.name}</span><small>{topic.count} 篇</small>
-						</a>
-					))}
-				</div>
-			</div>
-			<div class="explore-panel">
-				<span class="explore-panel__label">年份</span>
-				<div class="year-links">
-					{years.map((year) => <a href={`/archive/${year}/`}>{year}</a>)}
-				</div>
-				<p>按时间回看写作、项目与每一次信息整理。</p>
-			</div>
-		</div>
-	</section>
+	</div>
 </BaseLayout>
+
+<style>
+	.today-date {
+		display: flex;
+		gap: 0.55rem;
+		align-items: center;
+	}
+
+	.section-header > .meta {
+		margin: 0;
+	}
+
+	.daily-feature__entry {
+		display: grid;
+		gap: 0.9rem;
+	}
+
+	.daily-feature__entry h3 {
+		margin: 0;
+		font-size: clamp(1.4rem, 3vw, 2.3rem);
+		line-height: 1.18;
+	}
+
+	.daily-feature__entry h3 a {
+		text-decoration: none;
+	}
+
+	.daily-feature__entry > p {
+		margin: 0;
+		color: var(--text-muted);
+	}
+
+	.daily-feature__reason {
+		padding-left: 0.85rem;
+		border-left: 2px solid var(--accent);
+		font-size: 0.88rem;
+	}
+
+	.daily-feature__reason strong {
+		color: var(--text);
+	}
+
+	.quick-links a {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	.intelligence-groups {
+		display: grid;
+		gap: 1.5rem;
+	}
+
+	.intelligence-group h3 {
+		margin: 0 0 0.35rem;
+		color: var(--accent-strong);
+		font-family: var(--sans);
+		font-size: 0.78rem;
+		letter-spacing: 0.04em;
+	}
+
+	.empty-state h3 {
+		margin-bottom: 0.5rem;
+	}
+
+	.empty-state p {
+		margin-bottom: 0.85rem;
+		color: var(--text-muted);
+	}
+</style>

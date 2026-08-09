@@ -1,37 +1,69 @@
-<header class="site-header">
+---
+import { primaryNavigation } from '../data/navigation';
+
+const pathname = Astro.url.pathname;
+const readingRoutes = ['/reading/', '/articles/', '/topics/', '/archive/'];
+const isActive = (href: string) => {
+	if (href === '/') return pathname === '/';
+	if (href === '/reading/') return readingRoutes.some((route) => pathname.startsWith(route));
+	return pathname.startsWith(href);
+};
+---
+
+<header class="site-header" data-pagefind-ignore>
 	<div class="site-header__inner shell">
-		<a class="brand" href="/" aria-label="TinyWall 首页">
+		<a class="brand" href="/" aria-label="TinyWall Today">
 			<span class="brand__mark" aria-hidden="true">T</span>
-			<span>TinyWall</span>
+			<span class="brand__name">TinyWall</span>
 		</a>
-		<button class="nav-toggle" type="button" aria-controls="site-sidebar" aria-expanded="false">
-			<span>菜单</span><span class="nav-toggle__icon" aria-hidden="true"></span>
-		</button>
+
+		<nav class="primary-nav" aria-label="主导航">
+			<ul>
+				{primaryNavigation.map((item) => (
+					<li>
+						<a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+							{item.label}
+						</a>
+					</li>
+				))}
+			</ul>
+		</nav>
+
+		<div class="site-header__tools">
+			<span class="system-mode" title="外观跟随系统设置">
+				<span class="system-mode__dot" aria-hidden="true"></span>
+				<span>系统</span>
+			</span>
+			<button class="command-trigger" type="button" data-command-open aria-haspopup="dialog">
+				<span class="command-trigger__label">搜索</span>
+				<kbd aria-label="快捷键 Command 或 Control 加 K">⌘ K</kbd>
+			</button>
+
+			<details class="site-menu" data-site-menu>
+				<summary>
+					<span>菜单</span>
+					<span class="menu-icon" aria-hidden="true"></span>
+				</summary>
+				<div class="site-menu__panel">
+					<nav aria-label="移动端主导航">
+						<ul>
+							{primaryNavigation.map((item) => (
+								<li>
+									<a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+										<span>{item.label}</span><span aria-hidden="true">→</span>
+									</a>
+								</li>
+							))}
+						</ul>
+					</nav>
+					<div class="site-menu__footer">
+						<button type="button" data-command-open aria-haspopup="dialog">
+							搜索 TinyWall <span aria-hidden="true">⌘ K</span>
+						</button>
+						<span>外观跟随系统设置</span>
+					</div>
+				</div>
+			</details>
+		</div>
 	</div>
 </header>
-
-<script is:inline>
-	document.addEventListener('DOMContentLoaded', () => {
-		const navToggle = document.querySelector('.nav-toggle');
-		const siteSidebar = document.querySelector('#site-sidebar');
-		const navClose = document.querySelector('[data-nav-close]');
-		const mobileNavQuery = window.matchMedia('(max-width: 900px)');
-
-		const setNavigationOpen = (open) => {
-			if (!navToggle || !siteSidebar) return;
-			siteSidebar.toggleAttribute('data-open', open);
-			navClose?.toggleAttribute('data-open', open);
-			navToggle.setAttribute('aria-expanded', String(open));
-			document.body.classList.toggle('nav-open', open && mobileNavQuery.matches);
-		};
-
-		navToggle?.addEventListener('click', () => {
-			setNavigationOpen(!siteSidebar?.hasAttribute('data-open'));
-		});
-		navClose?.addEventListener('click', () => setNavigationOpen(false));
-		document.addEventListener('keydown', (event) => {
-			if (event.key === 'Escape') setNavigationOpen(false);
-		});
-		mobileNavQuery.addEventListener('change', () => setNavigationOpen(false));
-	});
-</script>

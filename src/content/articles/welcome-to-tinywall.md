@@ -1,6 +1,5 @@
 ---
 title: 欢迎来到 TinyWall
-slug: welcome-to-tinywall
 description: TinyWall 为什么从一个个人主页开始，又将如何成为连接项目、阅读与长期思考的知识入口。
 publishedAt: 2026-07-18
 topics:

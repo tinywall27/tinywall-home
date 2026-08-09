@@ -9,6 +9,7 @@ import {
 	getPublishedArticles,
 	type Article,
 } from '../../lib/articles';
+import { getCommandItems } from '../../lib/content';
 
 export async function getStaticPaths() {
 	const articles = await getPublishedArticles();
@@ -33,6 +34,7 @@ const { Content, headings } = await render(article);
 const toc = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
 const readingMinutes = estimateReadingMinutes(article.body);
 const year = getArticleYear(article);
+const commandItems = await getCommandItems();
 ---
 
 <BaseLayout
@@ -41,16 +43,17 @@ const year = getArticleYear(article);
 	canonical={`/articles/${article.id}/`}
 	type="article"
 	publishedAt={article.data.publishedAt}
+	commandItems={commandItems}
 >
 	<article
-		class="article-page shell"
+		class="article-page page-shell"
 		data-pagefind-body
 		data-pagefind-filter={`year:${year}`}
 		data-pagefind-sort={`date:${article.data.publishedAt.toISOString()}`}
 	>
 		<header class="article-header">
 			<div class="article-header__meta">
-				<span>{article.data.series === 'ai-daily-brief' ? 'AI DAILY BRIEF' : 'TINYWALL ARTICLE'}</span>
+				<span data-pagefind-meta="type">{article.data.series === 'ai-daily-brief' ? 'AI Daily Brief' : 'Article'}</span>
 				<span>{readingMinutes} 分钟阅读</span>
 			</div>
 			<h1 data-pagefind-meta="title">{article.data.title}</h1>
@@ -105,7 +108,11 @@ const year = getArticleYear(article);
 						<h2 id="sources-title">参考来源</h2>
 						<ol>
 							{article.data.sources.map((source) => (
-								<li><a href={source.url} target="_blank" rel="noopener noreferrer">{source.title}</a></li>
+								<li>
+									<a href={source.url} target="_blank" rel="noopener noreferrer">
+										{source.title}<span class="visually-hidden">（在新标签页打开）</span>
+									</a>
+								</li>
 							))}
 						</ol>
 					</section>
