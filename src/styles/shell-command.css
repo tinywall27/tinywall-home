@@ -98,10 +98,20 @@
 
 .system-mode {
 	display: inline-flex;
+	min-height: 38px;
 	align-items: center;
 	gap: 0.4rem;
+	padding: 0.3rem 0.45rem;
+	border: 0;
+	border-radius: var(--radius-sm);
+	background: transparent;
 	color: var(--text-muted);
 	font-size: 0.75rem;
+}
+
+.system-mode:hover {
+	background: var(--surface-subtle);
+	color: var(--text);
 }
 
 .system-mode__dot {
@@ -110,6 +120,14 @@
 	border: 1px solid var(--line-strong);
 	border-radius: 50%;
 	background: linear-gradient(90deg, var(--text) 50%, var(--surface-raised) 50%);
+}
+
+.system-mode[data-theme-mode='light'] .system-mode__dot {
+	background: #fffefb;
+}
+
+.system-mode[data-theme-mode='dark'] .system-mode__dot {
+	background: #1c211e;
 }
 
 .command-trigger {
@@ -250,11 +268,6 @@ kbd,
 	background: var(--surface-subtle);
 	color: var(--text);
 	font-size: 0.82rem;
-}
-
-.site-menu__footer > span {
-	color: var(--text-muted);
-	font-size: 0.75rem;
 }
 
 /* Command palette */

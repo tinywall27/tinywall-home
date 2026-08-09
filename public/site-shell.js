@@ -7,12 +7,61 @@ const pagefindResults = dialog?.querySelector('[data-command-pagefind]');
 const staticItems = [...(dialog?.querySelectorAll('[data-command-static]') ?? [])];
 const siteMenu = document.querySelector('[data-site-menu]');
 const todayDate = document.querySelector('[data-today-date]');
+const themeToggles = [...document.querySelectorAll('[data-theme-toggle]')];
+const themeColor = document.querySelector('[data-theme-color]');
+const colorScheme = window.matchMedia('(prefers-color-scheme: dark)');
 let returnFocus = null;
 let pagefindPromise = null;
 let debounceTimer = 0;
 let searchVersion = 0;
 
 const normalize = (value) => value.normalize('NFKC').toLocaleLowerCase('zh-CN').trim();
+
+const themeLabels = {
+	system: '系统',
+	light: '浅色',
+	dark: '深色',
+};
+
+const getThemeMode = () => document.documentElement.dataset.theme || 'system';
+const getResolvedTheme = (mode) => mode === 'system' ? (colorScheme.matches ? 'dark' : 'light') : mode;
+
+const applyTheme = (mode, persist = true) => {
+	if (mode === 'system') delete document.documentElement.dataset.theme;
+	else document.documentElement.dataset.theme = mode;
+
+	if (persist) {
+		try {
+			if (mode === 'system') localStorage.removeItem('tinywall-theme');
+			else localStorage.setItem('tinywall-theme', mode);
+		} catch {}
+	}
+
+	const label = themeLabels[mode];
+	const resolvedTheme = getResolvedTheme(mode);
+	themeColor?.setAttribute('content', resolvedTheme === 'dark' ? '#0c0d0c' : '#fafaf8');
+	themeToggles.forEach((toggle) => {
+		toggle.dataset.themeMode = mode;
+		toggle.setAttribute('aria-label', `外观模式：${label}。点击切换`);
+		toggle.title = `当前为${label}模式，点击切换`;
+		toggle.querySelectorAll('[data-theme-label]').forEach((node) => {
+			node.textContent = label;
+		});
+	});
+};
+
+const getNextTheme = () => {
+	const currentMode = getThemeMode();
+	if (currentMode === 'system') return getResolvedTheme(currentMode) === 'dark' ? 'light' : 'dark';
+	if (currentMode === 'dark') return 'light';
+	return 'system';
+};
+
+applyTheme(getThemeMode(), false);
+themeToggles.forEach((toggle) => toggle.addEventListener('click', () => applyTheme(getNextTheme())));
+colorScheme.addEventListener('change', () => {
+	if (getThemeMode() === 'system') applyTheme('system', false);
+});
 
 const updateTodayDate = () => {
 	if (!(todayDate instanceof HTMLTimeElement)) return;

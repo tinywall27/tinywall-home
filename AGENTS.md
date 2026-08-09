@@ -8,7 +8,7 @@ TinyWall 是个人日常使用优先、公开访问友好的 Personal Informatio
 
 - `/` 是 Today：用户打开后应在两秒内看到当天值得关注的内容和高频入口。
 - 顶部主导航固定为 `Today · Reading · Projects · Links · Notes`，主导航项目不得超过五个。
-- V1 采用静态优先架构，不实现账号、后端、数据库、跨设备同步、阅读状态、收藏状态或浏览器持久化。
+- V1 采用静态优先架构，不实现账号、后端、数据库、跨设备同步、阅读状态或收藏状态；唯一允许的浏览器持久化是外观模式偏好。
 - 当前实现与目标规范必须明确区分。不得把 `docs/` 中标记为“目标”或“计划中”的能力描述成已经上线。
 - 产品范围、路由和阶段划分以 [`docs/PRODUCT.md`](docs/PRODUCT.md) 为准。
 
@@ -72,7 +72,7 @@ ASTRO_TELEMETRY_DISABLED=1 npm run quality
 
 - 视觉方向固定为 `Editorial × Software`：暖白背景、墨色正文、单一陶土强调色、高信息密度、弱边框和克制动效。
 - 不使用大型营销 Hero、赛博朋克渐变、重玻璃拟态、过量阴影或大面积装饰图片。
-- V1 必须支持系统深色模式、320px 起的响应式布局、键盘操作、可见焦点、`prefers-reduced-motion` 和 WCAG 2.2 AA 对比度。
+- V1 必须支持系统、浅色和深色三种外观模式及本地偏好记忆，同时满足 320px 起的响应式布局、键盘操作、可见焦点、`prefers-reduced-motion` 和 WCAG 2.2 AA 对比度。
 - 页面修改必须同时检查桌面端与移动端，不得以隐藏核心内容解决窄屏布局问题。
 - 设计 token、组件状态和交互规则以 [`docs/DESIGN.md`](docs/DESIGN.md) 为准。
 
@@ -80,14 +80,15 @@ ASTRO_TELEMETRY_DISABLED=1 npm run quality
 
 - AI 或每日资讯内容必须保留可核验的直接来源，清楚区分事实、来源观点和 TinyWall/AI 的归纳推断。
 - 不复制受版权保护的全文或大段原文；使用简短转述并链接原始来源。
-- 草稿、示例和真实发布内容必须醒目标识。`draft` 内容不得进入公开页面、搜索、RSS 或 sitemap。
+- 草稿、示例和真实发布内容必须醒目标识。`draft` 内容不得进入公开页面、搜索或 sitemap。
 - 自动化不得直接提交 `main`。目标流程为生成分支和 PR，通过 schema、构建和人工来源审核后再合并。
 - 详细内容契约和失败处理以 [`docs/CONTENT_AND_AUTOMATION.md`](docs/CONTENT_AND_AUTOMATION.md) 为准。
 
 ## Git 与文档同步
 
-- Git 推送优先使用 SSH：`git@github.com:tinywall27/tinywall-home.git`。
-- 使用功能分支或自动化分支提交 PR；`main` 是生产分支。
+- Git 推送优先使用 SSH 443：`ssh://git@ssh.github.com:443/tinywall27/tinywall-home.git`。
+- 人工与 Agent 修改直接在 `main` 完成，运行完整质量门后推送；`main` 是生产分支。
+- 内容自动化仍必须使用独立自动化分支和 PR，不得自行提交或合并 `main`。
 - 保留用户已有改动，不做与当前任务无关的格式化、重构或依赖升级。
 - 功能、路由、schema、开发命令或发布流程发生变化时，必须在同一变更中更新 README、贡献说明和对应 `docs/` 规范。
 - 完成工作前检查 `git diff --check`、内部文档链接以及工作树范围，确认没有意外修改运行代码或生成文件。

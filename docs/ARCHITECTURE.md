@@ -8,13 +8,13 @@ TinyWall 当前是 Astro 7 静态站点：
 
 - TypeScript strict mode；
 - Astro Content Collections + Markdown/MDX；
-- `@astrojs/rss`、`@astrojs/sitemap` 和 Pagefind；
+- `@astrojs/sitemap` 和 Pagefind；
 - 纯 Astro 组件和少量原生 JavaScript，无 UI 框架；
 - 无后端、数据库和认证；
 - Articles、Notes、Reading 三个内容集合；
 - 集中的导航、Projects、Links、Topics 和站点元数据；
 - 五类命令搜索、Today 构建期聚合和跨内容类型 Topics/Archive；
-- GitHub Actions PR 质量检查；
+- GitHub Actions main/PR 质量检查；
 - `npm run build` 生成 `dist`，由 Cloudflare Pages 发布。
 
 当前没有 AI 采集器、定时调度、自动摘要或自动开 PR 实现。
@@ -24,7 +24,7 @@ TinyWall 当前是 Astro 7 静态站点：
 1. **静态优先**：所有公共页面应在构建期生成，核心体验不依赖服务端运行时。
 2. **数据优先**：可重复内容来自集中且有类型的数据源，页面负责组合，不保存第二份业务数据。
 3. **渐进增强**：命令面板、筛选和主题切换可以使用客户端 JavaScript，但核心内容与链接在脚本失败时仍可访问。
-4. **稳定 URL**：公开 URL 是兼容接口；迁移不能静默破坏已有链接、RSS 或搜索索引。
+4. **稳定 URL**：内容 URL 是兼容接口；迁移不能静默破坏已有链接或搜索索引。
 5. **最少依赖**：优先使用 Astro 和浏览器标准能力，只有明确收益超过维护成本时才新增依赖。
 6. **当前与目标分离**：规范中的目标模型不能被描述成当前已经存在。
 
@@ -105,9 +105,6 @@ Reading V1 只生成列表和搜索元数据，不生成本地详情页。点击
 | `/articles/`、`/articles/[slug]/` | 保留 | Articles collection |
 | `/topics/`、`/topics/[topic]/` | 保留并扩展 | 共享 topics 与日期型内容 |
 | `/archive/`、`/archive/[year]/` | 保留并扩展 | Articles、Notes、Reading |
-| `/rss.xml` | 保留 | V1 继续发布 TinyWall 自写内容 |
-
-`/rss.xml` 在 V1 继续以 Articles 为主，并可加入公开 Notes；外部 Reading 不进入该 Feed，避免把第三方内容误认为 TinyWall 发布内容。若未来增加 Reading Feed，应使用独立 URL 和明确标题。
 
 `/now/` 与 `/about/` 属于第二阶段，不在 V1 创建。
 
@@ -143,7 +140,7 @@ V1 搜索覆盖 Articles、Notes、Reading、Projects 和 Links：
 
 - 语义化 design tokens、全站外壳/命令面板、内容页面样式已按职责拆分；新增样式继续进入对应文件，不得重新堆回单一全局文件。
 - 客户端代码保持原生、模块化并按需加载；不为简单筛选或对话框引入完整 UI 框架。
-- 系统深色模式使用 CSS `prefers-color-scheme`。V1 不使用 localStorage 持久化主题或其他个人状态。
+- 外观默认使用 CSS `prefers-color-scheme` 跟随系统；用户可以在系统、浅色和深色之间切换。仅外观偏好使用 `localStorage`，不保存其他个人状态。
 - 所有交互都必须提供语义 HTML、键盘路径、焦点管理和减少动效行为。
 
 ## 构建、部署与失败行为
@@ -151,7 +148,7 @@ V1 搜索覆盖 Articles、Notes、Reading、Projects 和 Links：
 - npm 是 Node 项目的唯一包管理器；`package-lock.json` 必须随依赖变化更新。
 - UV 仅管理未来 Python 自动化环境，相关文件应与 Node 依赖边界清晰分离。
 - `npm run quality` 是提交前完整质量门，包含内容契约、原生浏览器脚本语法、Astro check、静态构建、Pagefind 和构建后站内链接检查。
-- `main` 是生产分支；功能和自动化变更先进入 PR。
+- `main` 是生产分支；人工与 Agent 修改通过完整质量门后直接推送，内容自动化继续使用独立分支和 PR。
 - `.github/workflows/quality.yml` 在 PR 和 `main` 上使用锁定依赖运行质量门；它不生成内容。
 - Cloudflare Pages 配置位于仓库外，代码不得假设平台中未被验证的环境变量或服务绑定。
 - schema 无效、来源缺失、重复 ID、未知 topic、内部链接错误或构建失败时，不得发布相关内容。

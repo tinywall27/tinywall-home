@@ -1,19 +1,19 @@
 # 内容与代码贡献说明
 
-TinyWall 当前由个人维护。手工修改、Agent 修改和自动化生成内容都应通过功能分支或自动化分支提交 Pull Request，以便在合并前检查内容、构建结果和 Cloudflare Pages 预览。
+TinyWall 当前由个人维护。人工与 Agent 修改直接在 `main` 完成；自动化生成内容使用独立分支和 Pull Request，以便在发布前检查来源、构建结果和 Cloudflare Pages 预览。
 
 ## 开发流程
 
-1. 从最新 `main` 创建范围明确的分支。
+1. 在最新 `main` 上进行范围明确的修改，不为日常人工或 Agent 工作创建功能分支。
 2. 使用 npm 管理 Node.js 依赖；不要新增其他 JavaScript 包管理器的锁文件。
 3. 开发服务使用 `npm run dev`（执行 `astro dev --background`），并通过 `astro dev status|logs|stop` 管理。
 4. 只修改当前任务需要的文件；功能、路由或 schema 变化应同步更新相关文档。
-5. 运行检查后提交 PR，由人审核后合并到 `main`。
+5. 运行完整质量门后提交并推送 `main`；只有自动化内容需要创建 PR 并由人审核合并。
 
 Git 推送优先使用 SSH：
 
 ```text
-git@github.com:tinywall27/tinywall-home.git
+ssh://git@ssh.github.com:443/tinywall27/tinywall-home.git
 ```
 
 ## 内容规则
@@ -23,7 +23,7 @@ git@github.com:tinywall27/tinywall-home.git
 - 不修改已发布内容的文件名或 URL；如确需修改，必须同步增加重定向并修复内部链接。
 - `description` 应能独立说明内容主题，不使用“点击查看”等空泛文字。
 - 主题必须来自 `src/data/topics.ts`；新增主题时同时补充名称和简介。
-- `draft: true` 的内容不得出现在公开页面、搜索、RSS 或 sitemap 中。
+- `draft: true` 的内容不得出现在公开页面、搜索或 sitemap 中。
 - `lang` 当前只是内容元数据，不表示网站已具备完整多语言路由。
 - 示例、草稿和真实发布内容必须明确标注，避免示例信息被误认为事实。
 
@@ -42,7 +42,7 @@ git@github.com:tinywall27/tinywall-home.git
 
 - 保持 Astro 静态优先和渐进增强；未经明确决策不增加后端、数据库、认证或前端框架。
 - 重复内容和导航必须来自集中数据源，不在多个组件重复硬编码。
-- 保留现有公开 URL，确保内部链接、RSS 和搜索仍可工作。
+- 保留现有内容 URL，确保内部链接和搜索仍可工作。
 - 新页面在 320px、常见平板宽度和桌面宽度下都应可用。
 - 检查键盘导航、可见焦点、语义 HTML、WCAG AA 对比度和 `prefers-reduced-motion`。
 - 视觉更改遵循[设计规范](docs/DESIGN.md)，不重新引入大型 Hero 或装饰性信息噪声。
@@ -67,5 +67,5 @@ ASTRO_TELEMETRY_DISABLED=1 npm run quality
 
 - 构建、内容校验和 Pagefind 索引成功；
 - 新增或修改的文档内部链接可达；
-- PR 不包含无关格式化、生成文件或依赖升级；
+- 提交不包含无关格式化、生成文件或依赖升级；
 - 目标能力没有被描述成当前已经上线。

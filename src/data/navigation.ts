@@ -1,5 +1,5 @@
 export type PrimaryNavigationId = 'today' | 'reading' | 'projects' | 'links' | 'notes';
-export type SecondaryNavigationId = 'articles' | 'topics' | 'archive' | 'rss';
+export type SecondaryNavigationId = 'articles' | 'topics' | 'archive';
 
 export interface NavigationItem<Id extends string = string> {
 	id: Id;
@@ -19,5 +19,4 @@ export const secondaryNavigation = [
 	{ id: 'articles', label: 'Articles', href: '/articles/' },
 	{ id: 'topics', label: 'Topics', href: '/topics/' },
 	{ id: 'archive', label: 'Archive', href: '/archive/' },
-	{ id: 'rss', label: 'RSS', href: '/rss.xml' },
 ] as const satisfies readonly NavigationItem<SecondaryNavigationId>[];

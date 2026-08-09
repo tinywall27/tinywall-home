@@ -30,10 +30,15 @@ const isActive = (href: string) => {
 		</nav>
 
 		<div class="site-header__tools">
-			<span class="system-mode" title="外观跟随系统设置">
+			<button
+				class="system-mode"
+				type="button"
+				data-theme-toggle
+				aria-label="切换外观模式"
+			>
 				<span class="system-mode__dot" aria-hidden="true"></span>
-				<span>系统</span>
-			</span>
+				<span data-theme-label>系统</span>
+			</button>
 			<button class="command-trigger" type="button" data-command-open aria-haspopup="dialog">
 				<span class="command-trigger__label">搜索</span>
 				<kbd aria-label="快捷键 Command 或 Control 加 K">⌘ K</kbd>
@@ -60,7 +65,9 @@ const isActive = (href: string) => {
 						<button type="button" data-command-open aria-haspopup="dialog">
 							搜索 TinyWall <span aria-hidden="true">⌘ K</span>
 						</button>
-						<span>外观跟随系统设置</span>
+						<button type="button" data-theme-toggle aria-label="切换外观模式">
+							<span>外观模式</span><span data-theme-label>系统</span>
+						</button>
 					</div>
 				</div>
 			</details>

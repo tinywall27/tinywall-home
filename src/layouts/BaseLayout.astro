@@ -35,12 +35,26 @@ const ogImage = new URL('/og-tinywall.png', Astro.site ?? siteMetadata.url);
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="generator" content={Astro.generator} />
 		<meta name="color-scheme" content="light dark" />
-		<meta name="theme-color" content="#fafaf8" media="(prefers-color-scheme: light)" />
-		<meta name="theme-color" content="#0c0d0c" media="(prefers-color-scheme: dark)" />
+		<meta name="theme-color" content="#fafaf8" data-theme-color />
+		<script is:inline>
+			try {
+				const savedTheme = localStorage.getItem('tinywall-theme');
+				if (savedTheme === 'light' || savedTheme === 'dark') {
+					document.documentElement.dataset.theme = savedTheme;
+				}
+				const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+				const resolvedTheme = savedTheme === 'light' || savedTheme === 'dark'
+					? savedTheme
+					: prefersDark ? 'dark' : 'light';
+				document.querySelector('[data-theme-color]')?.setAttribute(
+					'content',
+					resolvedTheme === 'dark' ? '#0c0d0c' : '#fafaf8',
+				);
+			} catch {}
+		</script>
 		<meta name="description" content={description} />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="canonical" href={siteUrl} />
-		<link rel="alternate" type="application/rss+xml" title={`${siteMetadata.name} RSS`} href="/rss.xml" />
 		<title>{title}</title>
 		<meta property="og:type" content={type} />
 		<meta property="og:site_name" content={siteMetadata.name} />

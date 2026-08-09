@@ -76,7 +76,7 @@ export async function getTodayContent(): Promise<TodayContent> {
 					(categoryOrder.get(a.category) ?? 0) - (categoryOrder.get(b.category) ?? 0) ||
 					a.order - b.order,
 			)
-			.slice(0, 6),
+			.slice(0, 10),
 		projects: projects.toSorted((a, b) => a.order - b.order).slice(0, 4),
 		recentNotes: notes.slice(0, 4),
 	};

@@ -25,11 +25,11 @@ TinyWall 的首要用户是站点所有者本人，公开访客是第二用户�
 
 - Astro 静态站点与 Cloudflare Pages 发布约定；
 - 以 Today 为首页的五段信息聚合；
-- Reading、Projects、Links、Notes、Articles、Topics、跨内容类型 Archive、RSS 和 404；
+- Reading、Projects、Links、Notes、Articles、Topics、跨内容类型 Archive 和 404；
 - Articles、Notes、Reading 三个内容集合，以及集中、类型化的 Projects、Links 和导航数据；
 - 覆盖五类内容的命令面板与 Article/Note 正文 Pagefind 索引；
-- 暖白克制的 `Editorial × Software`、顶部五项导航、系统深色模式和响应式布局；
-- 内容契约、静态构建、Pagefind、站内链接和 PR quality workflow。
+- 暖白克制的 `Editorial × Software`、顶部五项导航、系统/浅色/深色切换和响应式布局；
+- 内容契约、静态构建、Pagefind、站内链接和 main/PR quality workflow。
 
 当前尚未实现自动采集、AI 摘要、定时调度和自动创建内容 PR。
 
@@ -51,7 +51,6 @@ TinyWall 的首要用户是站点所有者本人，公开访客是第二用户�
 - `/articles/[slug]/`：长文详情；
 - `/topics/`、`/topics/[topic]/`：按主题发现内容；
 - `/archive/`、`/archive/[year]/`：按年份回看内容；
-- `/rss.xml`：已有公开 Feed；
 - `/404/`：未找到页面。
 
 V1 不增加第六个顶部导航项。Topics、Archive 和 Articles 应在 Reading 页面、搜索结果或页脚中可达。
@@ -89,8 +88,8 @@ Reading 条目 V1 不创建本地详情页，以免复制原文；搜索结果�
 - 创建 `/reading/`、`/projects/`、`/links/`、`/notes/` 及 Notes 详情路由；
 - 让 Topics、Archive 和全局搜索能发现适用的日期型内容；
 - 提供覆盖五类内容的命令面板和搜索入口，支持 `⌘K`、`Ctrl+K`、Esc 与焦点返回；
-- 保留现有公开 URL、RSS 和静态构建能力；
-- 落实暖白克制的 `Editorial × Software` 视觉、系统深色模式、响应式和无障碍要求；
+- 保留现有内容 URL 和静态构建能力；
+- 落实暖白克制的 `Editorial × Software` 视觉、三态外观切换、响应式和无障碍要求；
 - 建立内容 schema、构建校验和人工 PR 审核基础。
 
 AI 内容生成分支、定时采集和自动创建 PR 仍未实现。它们需要单独确定来源、调度器和凭据方案，并继续遵守“不得直接提交 `main`”的约束。
@@ -100,7 +99,7 @@ AI 内容生成分支、定时采集和自动创建 PR 仍未实现。它们需�
 V1 不实现：
 
 - 登录、用户账户、数据库、服务端 API 或 CMS；
-- 跨设备同步、未读/已读、收藏、评分或浏览器持久化；
+- 跨设备同步、未读/已读、收藏、评分或外观偏好以外的浏览器持久化；
 - 社交 Feed、评论、点赞、推荐算法或无限滚动；
 - 完整多语言路由；
 - 抓取或保存付费文章全文；
@@ -119,6 +118,6 @@ V1 不实现：
 - 首页首屏优先显示真实信息或清晰空状态，而不是营销介绍；
 - 同一项目、链接或导航项只维护一次即可在所有使用位置更新；
 - 五类内容能通过全局入口被找到，JavaScript 失败时仍有基本导航路径；
-- 所有旧公开 URL 继续有效，草稿不会进入页面、搜索、RSS 或 sitemap；
-- 系统浅色/深色模式、键盘导航、可见焦点和减少动效偏好均得到支持；
+- 所有已保留的内容 URL 继续有效，草稿不会进入页面、搜索或 sitemap；
+- 系统/浅色/深色模式、本地偏好记忆、键盘导航、可见焦点和减少动效偏好均得到支持；
 - AI 内容在合并前能追溯来源，并经过人工审核。

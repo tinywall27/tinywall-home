@@ -10,9 +10,9 @@
 | 内容 | Articles、Notes、外部 Reading、Topics 和跨内容类型 Archive |
 | 项目与链接 | 集中、类型化的 Projects 与分类 Links 数据 |
 | 搜索 | 覆盖五类内容的 `⌘K` / `Ctrl+K` 命令面板，以及 Pagefind 正文搜索 |
-| 外观 | 暖白克制的 `Editorial × Software`、顶部五项导航、系统深色模式和 320px 响应式 |
-| 数据与状态 | Astro 静态内容；无账号、数据库或个人状态持久化 |
-| 质量门 | 内容契约、类型检查、静态构建、Pagefind、站内链接和 PR workflow |
+| 外观 | 暖白克制的 `Editorial × Software`、顶部五项导航、系统/浅色/深色切换和 320px 响应式 |
+| 数据与状态 | Astro 静态内容；无账号或数据库，仅在本地保存外观偏好 |
+| 质量门 | 内容契约、类型检查、静态构建、Pagefind、站内链接和 main/PR workflow |
 
 AI 采集、摘要和自动开 PR 尚未实现；当前仓库只提供经过核验的示例内容、内容 schema 和发布质量门。完整边界见[内容与自动化规范](docs/CONTENT_AND_AUTOMATION.md)。
 
@@ -23,8 +23,8 @@ AI 采集、摘要和自动开 PR 尚未实现；当前仓库只提供经过核�
 - Astro Content Collections 与 MDX
 - 原生 JavaScript 命令面板和渐进增强
 - Pagefind 中文全文索引
-- RSS 与 sitemap
-- GitHub Actions PR 质量检查
+- sitemap
+- GitHub Actions main/PR 质量检查
 - Cloudflare Pages 发布
 
 ## 本地开发
@@ -65,7 +65,7 @@ ASTRO_TELEMETRY_DISABLED=1 npm run quality
 ## 项目结构
 
 ```text
-.github/workflows/     Pull Request 与 main 质量检查
+.github/workflows/     main 与自动化 Pull Request 质量检查
 scripts/               内容与构建后站点验证
 src/components/        Astro UI 组件
 src/content/           Articles、Notes、Reading 内容
@@ -104,10 +104,10 @@ Projects、Links、导航和站点元数据分别维护在 `src/data/` 的集中
 
 ## 内容与发布流程
 
-- 手工内容、Agent 生成内容和未来自动化内容都通过功能分支或自动化分支提交 PR。
+- 人工与 Agent 修改直接在 `main` 完成，运行 `npm run quality` 后推送。
 - `.github/workflows/quality.yml` 会在 PR 和 `main` 上使用锁定依赖运行完整质量门。
 - AI Daily Reading 自动化不得直接推送 `main`；未来实现必须创建 PR，并由人核对来源、摘要与版权风险。
-- PR 合并到 `main` 后，由 Cloudflare Pages 生成生产站点。
+- `main` 推送后，由 Cloudflare Pages 生成生产站点。
 - 当前尚无采集器、定时任务、AI 凭据或自动开 PR 脚本，不应把质量 workflow 描述为内容生成自动化。
 
 ## Cloudflare Pages
@@ -118,7 +118,7 @@ Projects、Links、导航和站点元数据分别维护在 `src/data/` 的集中
 - Output directory：`dist`
 - Custom domain：`tinywall.cc`
 
-Cloudflare Pages 的平台配置位于仓库外。功能分支和 PR 可用于预览；生产发布以平台实际配置为准。
+Cloudflare Pages 的平台配置位于仓库外。自动化 PR 可用于预览；生产发布以平台实际配置为准。
 
 ## 文档索引
 
