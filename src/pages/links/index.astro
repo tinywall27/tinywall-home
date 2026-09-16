@@ -1,4 +1,5 @@
 ---
+import { isExternalUrl, siteHref } from '../../lib/urls';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { linkGroups } from '../../data/links';
 import { getCommandItems } from '../../lib/content';
@@ -35,13 +36,13 @@ const totalLinks = populatedGroups.reduce((total, group) => total + group.links.
 								<ul>
 									{group.links.map((link) => (
 										<li>
-											<a href={link.url} target="_blank" rel="noopener noreferrer">
+											<a href={siteHref(link.url)} target={isExternalUrl(link.url) ? "_blank" : undefined} rel={isExternalUrl(link.url) ? "noopener noreferrer" : undefined}>
 												<span>
 													<strong>{link.title}</strong>
 													{link.description && <small>{link.description}</small>}
 												</span>
-												<span aria-hidden="true">↗</span>
-												<span class="visually-hidden">（在新标签页打开）</span>
+												<span aria-hidden="true">{isExternalUrl(link.url) ? '↗' : '→'}</span>
+												{isExternalUrl(link.url) && <span class="visually-hidden">（在新标签页打开）</span>}
 											</a>
 										</li>
 									))}

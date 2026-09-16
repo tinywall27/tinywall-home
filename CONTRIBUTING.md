@@ -27,6 +27,12 @@ ssh://git@ssh.github.com:443/tinywall27/tinywall-home.git
 - `lang` 当前只是内容元数据，不表示网站已具备完整多语言路由。
 - 示例、草稿和真实发布内容必须明确标注，避免示例信息被误认为事实。
 
+### 育儿指南页面
+
+- 路由固定为 `/guides/parenting/`，作为独立静态 Astro 页面维护；它不是新的内容集合，也不创建 `/guides/` 中心页。
+- 指南正文唯一维护位置为 `src/content/guides/parenting.html`；样式和交互脚本分别为 `src/styles/parenting.css` 与 `public/parenting.js`。改动必须保留原 HTML 的分龄、主题、搜索、打印和来源信息，并接入全站布局、外观主题与站内搜索。
+- Projects 集中数据记录育儿指南的正式项目归属，Links 集中数据记录日常工具，Today 的 Quick Links 提供育儿速查入口。不要复制指南正文或在页面中重复维护这些入口。
+
 ## AI 与外部来源
 
 - AI 生成或辅助生成的事实性内容必须提供可核验的直接来源；优先使用官方公告、原始研究、监管文件和一手报道。
@@ -67,5 +73,6 @@ ASTRO_TELEMETRY_DISABLED=1 npm run quality
 
 - 构建、内容校验和 Pagefind 索引成功；
 - 新增或修改的文档内部链接可达；
+- `/guides/parenting/` 可达，分龄、主题、搜索、打印和来源在桌面端与移动端仍可用，Projects、Links 和 Today Quick Links 入口仍指向有效目标；
 - 提交不包含无关格式化、生成文件或依赖升级；
 - 目标能力没有被描述成当前已经上线。

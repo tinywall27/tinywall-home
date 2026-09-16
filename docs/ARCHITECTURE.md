@@ -12,6 +12,7 @@ TinyWall 当前是 Astro 7 静态站点：
 - 纯 Astro 组件和少量原生 JavaScript，无 UI 框架；
 - 无后端、数据库和认证；
 - Articles、Notes、Reading 三个内容集合；
+- 独立静态 `/guides/parenting/` 页面；它不是新的内容集合或内容类型，也不生成 `/guides/` 中心页；
 - 集中的导航、Projects、Links、Topics 和站点元数据；
 - 五类命令搜索、Today 构建期聚合和跨内容类型 Topics/Archive；
 - GitHub Actions main/PR 质量检查；
@@ -69,6 +70,12 @@ Notes 使用文件名作为 slug，并生成 `/notes/[slug]/` 详情页。
 
 Reading V1 只生成列表和搜索元数据，不生成本地详情页。点击条目打开 canonical external URL。
 
+### 育儿指南
+
+育儿指南是单一静态页面，不进入 Astro Content Collections。路由为 `/guides/parenting/`，正文唯一维护位置为 `src/content/guides/parenting.html`；页面专属样式和交互脚本分别位于 `src/styles/parenting.css` 与 `public/parenting.js`。页面必须保留原 HTML 的分龄、主题、搜索、打印和来源信息，并接入全站布局、外观主题与站内搜索。
+
+共享元数据来自 `src/data/parenting.ts`，Projects 集中数据记录该指南的正式项目归属，Links 集中数据记录日常工具，Today 的 Quick Links 只复用 `/guides/parenting/` 路由作为育儿速查入口。正文和入口不得在多个页面复制维护。
+
 ### Projects
 
 个人项目使用单一、类型化的中央数据文件。最低字段为：
@@ -105,6 +112,7 @@ Reading V1 只生成列表和搜索元数据，不生成本地详情页。点击
 | `/articles/`、`/articles/[slug]/` | 保留 | Articles collection |
 | `/topics/`、`/topics/[topic]/` | 保留并扩展 | 共享 topics 与日期型内容 |
 | `/archive/`、`/archive/[year]/` | 保留并扩展 | Articles、Notes、Reading |
+| `/guides/parenting/` | 已实现 | 独立静态 Astro 页面；正文来自 `src/content/guides/parenting.html` |
 
 `/now/` 与 `/about/` 属于第二阶段，不在 V1 创建。
 
@@ -122,6 +130,7 @@ Articles / Notes / Reading / Projects / Links
 
 - Today 不复制条目内容，只保存展示规则。
 - 当天 Reading 不足时，可显示最近一次有效精选，但必须显示真实日期。
+- 育儿指南不作为 Today 的独立数据源；首页只通过 Quick Links 引用其稳定路由。
 - `featured` 或排序字段只能影响展示，不能改变 canonical 数据。
 - 项目、链接和内容选择逻辑应放在可测试的辅助函数中，不散落在页面模板里。
 
@@ -130,6 +139,7 @@ Articles / Notes / Reading / Projects / Links
 V1 搜索覆盖 Articles、Notes、Reading、Projects 和 Links：
 
 - 本地页面正文继续由 Pagefind 索引；
+- 育儿指南通过项目元数据进入全局搜索（育儿、月龄、成长指南等关键词）；正文由指南页自己的搜索框检索；
 - 外部 Reading、Projects 和 Links 通过构建期生成的轻量静态索引加入命令面板；
 - 每个结果包含类型、标题、简短说明、目标 URL 和可搜索关键词；
 - 本地结果在站内打开，外部结果使用安全的新窗口策略或明确的外链提示；

@@ -8,6 +8,7 @@
 | --- | --- |
 | Today | 日期、Today Intelligence、Daily Read、Quick Links、Projects、Recent Notes |
 | 内容 | Articles、Notes、外部 Reading、Topics 和跨内容类型 Archive |
+| 育儿指南 | 独立静态 `/guides/parenting/` 页面；保留分龄、主题、搜索、打印和来源，并接入全站布局、主题与搜索 |
 | 项目与链接 | 集中、类型化的 Projects 与分类 Links 数据 |
 | 搜索 | 覆盖五类内容的 `⌘K` / `Ctrl+K` 命令面板，以及 Pagefind 正文搜索 |
 | 外观 | 暖白克制的 `Editorial × Software`、顶部五项导航、系统/浅色/深色切换和 320px 响应式 |
@@ -68,7 +69,7 @@ ASTRO_TELEMETRY_DISABLED=1 npm run quality
 .github/workflows/     main 与自动化 Pull Request 质量检查
 scripts/               内容与构建后站点验证
 src/components/        Astro UI 组件
-src/content/           Articles、Notes、Reading 内容
+src/content/           Articles、Notes、Reading 和独立指南正文
 src/data/              导航、主题、项目、链接与站点元数据
 src/layouts/           页面布局
 src/lib/               内容读取、聚合、校验与格式化逻辑
@@ -99,6 +100,10 @@ docs/                  产品、架构、设计和自动化规范
 - Reading 保存外部内容的 canonical URL、来源、摘要和推荐理由，站内不复制第三方全文。
 - Reading 条目直接打开原始来源，不生成本地详情页。
 - 两类内容的字段契约见[架构规范](docs/ARCHITECTURE.md)和[内容规范](docs/CONTENT_AND_AUTOMATION.md)。
+
+### 育儿指南
+
+`/guides/parenting/` 是独立静态 Astro 页面，不新增内容集合，也不创建 `/guides/` 中心页。页面保留原 HTML 的分龄、主题、搜索、打印和来源信息，并接入全站布局、外观主题与站内搜索。指南正文的唯一维护位置是 `src/content/guides/parenting.html`；对应样式和交互脚本分别是 `src/styles/parenting.css` 与 `public/parenting.js`。育儿指南归入 Projects；日常工具入口由 Links 维护，Today 首页的 Quick Links 提供“育儿速查”入口。不得在其他页面或组件复制第二份指南正文。
 
 Projects、Links、导航和站点元数据分别维护在 `src/data/` 的集中数据文件中，不得在页面重复硬编码。
 

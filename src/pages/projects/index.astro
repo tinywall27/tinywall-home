@@ -1,4 +1,5 @@
 ---
+import { isExternalUrl, siteHref } from '../../lib/urls';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { projects, projectStatuses } from '../../data/projects';
 import { getCommandItems } from '../../lib/content';
@@ -36,8 +37,8 @@ const orderedProjects = projects.toSorted((a, b) => a.order - b.order);
 									</div>
 									<h3 class="project-item__title">
 										{project.url ? (
-											<a href={project.url} target="_blank" rel="noopener noreferrer">
-												{project.title}<span class="visually-hidden">（在新标签页打开项目）</span>
+											<a href={siteHref(project.url)} target={isExternalUrl(project.url) ? "_blank" : undefined} rel={isExternalUrl(project.url) ? "noopener noreferrer" : undefined}>
+												{project.title}{isExternalUrl(project.url) && <span class="visually-hidden">（在新标签页打开项目）</span>}
 											</a>
 										) : project.title}
 									</h3>
@@ -51,8 +52,8 @@ const orderedProjects = projects.toSorted((a, b) => a.order - b.order);
 									)}
 								</div>
 								{project.url && (
-									<a class="external-mark" href={project.url} target="_blank" rel="noopener noreferrer" aria-label={`打开项目：${project.title}`}>
-										<span aria-hidden="true">↗</span>
+									<a class="external-mark" href={siteHref(project.url)} target={isExternalUrl(project.url) ? "_blank" : undefined} rel={isExternalUrl(project.url) ? "noopener noreferrer" : undefined} aria-label={`打开项目：${project.title}`}>
+										<span aria-hidden="true">{isExternalUrl(project.url) ? '↗' : '→'}</span>
 									</a>
 								)}
 							</article>

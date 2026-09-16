@@ -5,6 +5,7 @@ const pathname = Astro.url.pathname;
 const readingRoutes = ['/reading/', '/articles/', '/topics/', '/archive/'];
 const isActive = (href: string) => {
 	if (href === '/') return pathname === '/';
+	if (href === '/projects/' && pathname.startsWith('/guides/')) return true;
 	if (href === '/reading/') return readingRoutes.some((route) => pathname.startsWith(route));
 	return pathname.startsWith(href);
 };

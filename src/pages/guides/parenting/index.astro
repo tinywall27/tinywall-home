@@ -1,0 +1,10 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import content from '../../../content/guides/parenting.html?raw';
+import { parentingGuide } from '../../../data/parenting';
+import '../../../styles/parenting.css';
+---
+<BaseLayout title={`${parentingGuide.title}｜TinyWall`} description={parentingGuide.description}>
+  <div class="parenting-guide" set:html={content} />
+  <script is:inline type="module" src="/parenting.js"></script>
+</BaseLayout>

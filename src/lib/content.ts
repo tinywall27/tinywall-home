@@ -1,3 +1,4 @@
+import { isExternalUrl, siteHref } from './urls';
 import { links, linkCategories } from '../data/links';
 import { projects } from '../data/projects';
 import { topicMap, type TopicId } from '../data/topics';
@@ -118,16 +119,16 @@ export async function getCommandItems(): Promise<CommandItem[]> {
 			type: 'project' as const,
 			title: project.title,
 			description: project.description,
-			url: project.url ?? `/projects/#${project.id}`,
-			external: Boolean(project.url),
+			url: siteHref(project.url ?? `/projects/#${project.id}`),
+			external: isExternalUrl(project.url),
 			keywords: [...project.tags],
 		})),
 		...links.toSorted((a, b) => a.order - b.order).map((link) => ({
 			type: 'link' as const,
 			title: link.title,
 			description: link.description,
-			url: link.url,
-			external: true,
+			url: siteHref(link.url),
+			external: isExternalUrl(link.url),
 			keywords: [
 				link.category,
 				linkCategories.find((category) => category.id === link.category)?.label ?? '',

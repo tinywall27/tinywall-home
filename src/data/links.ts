@@ -1,3 +1,4 @@
+import { parentingGuide } from './parenting';
 export const linkCategories = [
 	{ id: 'daily', label: '日常工具', description: '日常写作、协作和开发入口。', order: 10 },
 	{ id: 'finance', label: '金融与市场', description: '宏观、金融体系和市场数据来源。', order: 20 },
@@ -18,6 +19,7 @@ export interface LinkItem {
 }
 
 export const links = [
+	{ id: parentingGuide.id, title: parentingGuide.shortTitle, url: parentingGuide.url, description: parentingGuide.description, category: 'daily', order: 5, featured: true },
 	{
 		id: 'chatgpt',
 		title: 'ChatGPT',

@@ -26,8 +26,9 @@ TinyWall 的首要用户是站点所有者本人，公开访客是第二用户�
 - Astro 静态站点与 Cloudflare Pages 发布约定；
 - 以 Today 为首页的五段信息聚合；
 - Reading、Projects、Links、Notes、Articles、Topics、跨内容类型 Archive 和 404；
+- 独立静态 `/guides/parenting/` 育儿指南页，保留原 HTML 的分龄、主题、搜索、打印和来源，并接入全站布局、主题与搜索；
 - Articles、Notes、Reading 三个内容集合，以及集中、类型化的 Projects、Links 和导航数据；
-- 覆盖五类内容的命令面板与 Article/Note 正文 Pagefind 索引；
+- 覆盖五类内容的命令面板（含育儿指南项目入口）与 Article/Note 正文 Pagefind 索引；
 - 暖白克制的 `Editorial × Software`、顶部五项导航、系统/浅色/深色切换和响应式布局；
 - 内容契约、静态构建、Pagefind、站内链接和 main/PR quality workflow。
 
@@ -52,6 +53,9 @@ TinyWall 的首要用户是站点所有者本人，公开访客是第二用户�
 - `/topics/`、`/topics/[topic]/`：按主题发现内容；
 - `/archive/`、`/archive/[year]/`：按年份回看内容；
 - `/404/`：未找到页面。
+- `/guides/parenting/`：独立静态育儿指南页，正式归入 Projects；日常工具由 Links 提供，Today 首页 Quick Links 提供“育儿速查”入口。
+
+育儿指南不新增内容类型，也不创建 `/guides/` 中心页。
 
 V1 不增加第六个顶部导航项。Topics、Archive 和 Articles 应在 Reading 页面、搜索结果或页脚中可达。
 
@@ -61,7 +65,7 @@ V1 不增加第六个顶部导航项。Topics、Archive 和 Articles 应在 Read
 
 1. **日期与问候**：紧凑展示当前日期和一句轻量问候，不形成大型 Hero。
 2. **Today Intelligence**：按 AI、Markets、Finance 等主题列出少量高价值资讯；显示标题、来源、时间和主题，不要求大图。
-3. **Daily Read + Quick Links**：左侧突出当天最值得深入阅读的条目，右侧提供最高频网址。
+3. **Daily Read + Quick Links**：左侧突出当天最值得深入阅读的条目，右侧提供最高频网址，并保留“育儿速查”入口。
 4. **Projects**：紧凑展示重要项目、状态和外部入口。
 5. **Recent Notes**：列出最近更新的短笔记。
 
@@ -86,6 +90,7 @@ Reading 条目 V1 不创建本地详情页，以免复制原文；搜索结果�
 - 把首页重构为 Today 聚合视图，移除大型 Hero 和大色块项目卡；
 - 建立 Articles、Notes、Reading、Projects、Links 的集中、类型化数据源；
 - 创建 `/reading/`、`/projects/`、`/links/`、`/notes/` 及 Notes 详情路由；
+- 创建独立静态 `/guides/parenting/` 页面，并保留分龄、主题、搜索、打印和来源交互；
 - 让 Topics、Archive 和全局搜索能发现适用的日期型内容；
 - 提供覆盖五类内容的命令面板和搜索入口，支持 `⌘K`、`Ctrl+K`、Esc 与焦点返回；
 - 保留现有内容 URL 和静态构建能力；

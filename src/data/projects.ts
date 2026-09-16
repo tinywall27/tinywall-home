@@ -1,3 +1,4 @@
+import { parentingGuide } from './parenting';
 export const projectStatuses = {
 	active: '持续维护',
 	building: '建设中',
@@ -20,6 +21,7 @@ export interface Project {
 }
 
 export const projects: readonly Project[] = [
+	{ ...parentingGuide, status: 'active', tags: ['育儿', '成长指南', '月龄'], order: 30 },
 	{
 		id: 'fund-knowledge-base',
 		title: '跨境基金知识库',

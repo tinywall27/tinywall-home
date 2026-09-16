@@ -233,6 +233,11 @@ commandInput?.addEventListener('input', () => {
 });
 
 dialog?.addEventListener('keydown', (event) => {
+	if (event.key === 'Escape') {
+		event.preventDefault();
+		dialog.close();
+		return;
+	}
 	if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
 	const items = getVisibleItems();
 	if (items.length === 0) return;

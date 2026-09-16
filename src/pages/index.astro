@@ -1,4 +1,5 @@
 ---
+import { isExternalUrl, siteHref } from '../lib/urls';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ReadingRow from '../components/ReadingRow.astro';
 import { projectStatuses } from '../data/projects';
@@ -117,10 +118,10 @@ const intelligenceGroups = Object.entries(
 						<ul>
 							{today.quickLinks.map((link) => (
 								<li>
-									<a href={link.url} target="_blank" rel="noopener noreferrer">
+									<a href={siteHref(link.url)} target={isExternalUrl(link.url) ? "_blank" : undefined} rel={isExternalUrl(link.url) ? "noopener noreferrer" : undefined}>
 										<span>{link.title}</span>
-										<span aria-hidden="true">↗</span>
-										<span class="visually-hidden">（在新标签页打开）</span>
+										<span aria-hidden="true">{isExternalUrl(link.url) ? '↗' : '→'}</span>
+										{isExternalUrl(link.url) && <span class="visually-hidden">（在新标签页打开）</span>}
 									</a>
 								</li>
 							))}
@@ -150,23 +151,23 @@ const intelligenceGroups = Object.entries(
 									</div>
 									<h3 class="project-item__title">
 										<a
-											href={project.url ?? `/projects/#${project.id}`}
-											target={project.url ? '_blank' : undefined}
-											rel={project.url ? 'noopener noreferrer' : undefined}
+											href={siteHref(project.url ?? `/projects/#${project.id}`)}
+											target={isExternalUrl(project.url) ? '_blank' : undefined}
+											rel={isExternalUrl(project.url) ? 'noopener noreferrer' : undefined}
 										>
-											{project.title}{project.url && <span class="visually-hidden">（在新标签页打开）</span>}
+											{project.title}{isExternalUrl(project.url) && <span class="visually-hidden">（在新标签页打开）</span>}
 										</a>
 									</h3>
 									<p class="project-item__description">{project.description}</p>
 								</div>
 								<a
 									class="external-mark"
-									href={project.url ?? `/projects/#${project.id}`}
-									target={project.url ? '_blank' : undefined}
-									rel={project.url ? 'noopener noreferrer' : undefined}
+									href={siteHref(project.url ?? `/projects/#${project.id}`)}
+									target={isExternalUrl(project.url) ? '_blank' : undefined}
+									rel={isExternalUrl(project.url) ? 'noopener noreferrer' : undefined}
 									aria-label={`${project.url ? '打开' : '查看'}项目：${project.title}`}
 								>
-									<span aria-hidden="true">{project.url ? '↗' : '→'}</span>
+									<span aria-hidden="true">{isExternalUrl(project.url) ? '↗' : '→'}</span>
 								</a>
 							</article>
 						))}
