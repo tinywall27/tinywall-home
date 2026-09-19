@@ -20,6 +20,11 @@ export const topics = [
 		description: '空间信息、区域知识与地理技术。',
 	},
 	{
+		id: 'gaming',
+		name: '游戏',
+		description: '有版本依据的游戏攻略、策略选择与游玩记录。',
+	},
+	{
 		id: 'daily-brief',
 		name: '每日简报',
 		description: '面向个人阅读的高密度每日信息窗口。',

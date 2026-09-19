@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="650" viewBox="0 0 480 650" role="img" aria-labelledby="title desc">
+  <title id="title">明先生：开局选阵速查</title>
+  <desc id="desc">主练逐鹿嬴政，逐鹿禁用时考虑河洛花木兰，河洛不合适时考虑大河龙蛇。先看禁用，再根据组件和血量决定路线。</desc>
+  <rect width="480" height="650" rx="12" fill="#f6f3ed"/>
+  <g font-family="PingFang SC, Microsoft YaHei, sans-serif" fill="#252521">
+    <text x="28" y="45" font-size="25" font-weight="700">明先生 · 开局选阵</text>
+    <text x="28" y="77" font-size="17" fill="#5f5c55">公测版本核查：2026.09.19</text>
+    <rect x="24" y="104" width="432" height="113" rx="8" fill="#fffdf8" stroke="#a44932" stroke-width="2"/>
+    <text x="44" y="139" font-size="18" fill="#963e2b">A / 主练</text>
+    <text x="44" y="172" font-size="26" font-weight="700">逐鹿嬴政</text>
+    <text x="44" y="202" font-size="18">逐鹿可用，组件来得顺</text>
+    <path d="M240 220v40m-6-7 6 7 6-7" fill="none" stroke="#777064" stroke-width="2"/>
+    <rect x="24" y="268" width="432" height="113" rx="8" fill="#fffdf8" stroke="#c9c2b5"/>
+    <text x="44" y="303" font-size="18" fill="#963e2b">B / 第一备选</text>
+    <text x="44" y="336" font-size="26" font-weight="700">河洛花木兰</text>
+    <text x="44" y="366" font-size="18">逐鹿禁用或不顺，河洛可用</text>
+    <path d="M240 384v40m-6-7 6 7 6-7" fill="none" stroke="#777064" stroke-width="2"/>
+    <rect x="24" y="432" width="432" height="113" rx="8" fill="#fffdf8" stroke="#c9c2b5"/>
+    <text x="44" y="467" font-size="18" fill="#963e2b">C / 另一条转向</text>
+    <text x="44" y="500" font-size="26" font-weight="700">大河龙蛇</text>
+    <text x="44" y="530" font-size="18">大河可用，敖隐与东皇接班</text>
+    <text x="28" y="588" font-size="19" font-weight="600">先看禁用，再看来牌与血量。</text>
+    <text x="28" y="618" font-size="16" fill="#5f5c55">箭头为练习优先级，不是局内强制换阵。</text>
+  </g>
+</svg>
