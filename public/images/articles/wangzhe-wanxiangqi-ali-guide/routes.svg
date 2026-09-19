@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="580" viewBox="0 0 480 580" role="img" aria-labelledby="title desc">
+  <title id="title">阿离：两条练习路线</title>
+  <desc id="desc">第一条河洛伞守约，找到主C，古币集中培养，补功能牌后继续强化。第二条干将转海月，干将积累等级，备齐遗志和海月，再转移等级交伞并补回辅助。</desc>
+  <rect width="480" height="580" rx="12" fill="#f6f3ed"/>
+  <g font-family="PingFang SC, Microsoft YaHei, sans-serif" fill="#252521">
+    <text x="28" y="46" font-size="27" font-weight="700">阿离 · 一把伞，两种乐趣</text>
+    <text x="28" y="78" font-size="17" fill="#5f5c55">正式服 / 2026.09.19 / 原创练习速查</text>
+    <rect x="24" y="106" width="432" height="185" rx="8" fill="#fffdf8" stroke="#a44932" stroke-width="2"/>
+    <text x="44" y="142" font-size="19" fill="#963e2b">先练 / 河洛可用</text>
+    <text x="44" y="180" font-size="29" font-weight="700">伞守约：连续狙击</text>
+    <text x="44" y="216" font-size="21">找主C → 古币集中培养</text>
+    <text x="44" y="250" font-size="21">补功能牌 → 保住爆发窗口</text>
+    <rect x="24" y="316" width="432" height="185" rx="8" fill="#fffdf8" stroke="#c9c2b5"/>
+    <text x="44" y="352" font-size="19" fill="#963e2b">再练 / 大河与逐鹿可用</text>
+    <text x="44" y="390" font-size="29" font-weight="700">干将转海月：等级接棒</text>
+    <text x="44" y="426" font-size="21">干将积累 → 备齐遗志与海月</text>
+    <text x="44" y="460" font-size="21">转移等级 → 交伞、补回辅助</text>
+    <text x="28" y="544" font-size="20" font-weight="600">换人前先备齐牌，别先卖掉旧主C。</text>
+  </g>
+</svg>
